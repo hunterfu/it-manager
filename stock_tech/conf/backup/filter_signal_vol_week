@@ -1,0 +1,15 @@
+# week线过滤信号
+Signals::Generic::And \
+{ Signals::Generic:Or \
+    {I:Generic:PeriodAgo 1 { S:Generic:Equal {I:OBV}  {I:Generic:MinInPeriod 13 {I:OBV}}}}\
+    {I:Generic:PeriodAgo 2 { S:Generic:Equal {I:OBV}  {I:Generic:MinInPeriod 13 {I:OBV}}}}\
+    {I:Generic:PeriodAgo 3 { S:Generic:Equal {I:OBV}  {I:Generic:MinInPeriod 13 {I:OBV}}}}\
+    {I:Generic:PeriodAgo 4 { S:Generic:Equal {I:OBV}  {I:Generic:MinInPeriod 13 {I:OBV}}}}\
+}\
+{ Signals::Generic:Or \
+    { S:Generic:CrossOverUp {I:MACD/1} {I:MACD/2}}\
+    {I:Generic:PeriodAgo 1 { S:Generic:CrossOverUp {I:MACD/1} {I:MACD/2}}}\
+    {I:Generic:PeriodAgo 2 { S:Generic:CrossOverUp {I:MACD/1} {I:MACD/2}}}\
+}\
+{S:Generic:Above {I:STO/3 9} {I:STO/4 9}}
+

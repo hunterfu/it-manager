@@ -1,0 +1,10 @@
+Signals::Generic::And \
+{ S:Generic:Below {I:SMA 50} {I:SMA 200} } \
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 35} } \
+{ S:Generic:Above {I:SMA 10} {I:SMA 35}} \
+{ S:Generic:Above {I:SMA 10} {I:SMA 50}} \
+{ S:Generic:Below {I:SMA 200} {I:Generic:PeriodAgo 60 {I:SMA 200}} } \
+{ S:Generic:Below {I:SMA 50} {I:Generic:PeriodAgo 60 {I:SMA 50}} } \
+{ S:Generic:Above { I:Generic:MinInPeriod 60 {I:MACD} } { I:Generic:MinInPeriod 120 {I:MACD} }} \
+{ S:Generic:Increase {I:SMA 20 {I:OBV} }} { S:Generic:Above {I:SMA 20 {I:OBV}} {I:Generic:PeriodAgo 20 {I:SMA 20 {I:OBV}}} }\
+{ S:Generic:Above {I:RSI} 30 } { S:Generic:Below {I:RSI} 65 } 

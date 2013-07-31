@@ -1,0 +1,8 @@
+# 反转日模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Above { I:Generic:MinInPeriod 10{I:MACD} } { I:Generic:MinInPeriod 20 {I:MACD} }} \
+{ S:Generic:Above {I:Generic:MinInPeriod 10 {I:RSI}}  {I:Generic:MinInPeriod 20 {I:RSI}} }\
+{ S:Generic:Below {I:Prices LOW} { I:Generic:PeriodAgo 1 {I:Prices LOW} } }\
+{ S:Generic:Above {I:Prices CLOSE} { I:Generic:PeriodAgo 1 {I:Prices CLOSE} } }\
+{ S:Generic:Equal {I:Generic:MinInPeriod 5 {I:Prices LOW}}  {I:Generic:MinInPeriod 130 {I:Prices LOW}}}
+#{ S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 30 {I:Prices VOLUME}}}} \

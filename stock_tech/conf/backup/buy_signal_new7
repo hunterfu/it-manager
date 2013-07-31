@@ -1,0 +1,8 @@
+S:Generic:And \
+{ S:Generic:Repeated {S:Generic:Above { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} }\
+{ I:Generic:PeriodAgo 5 { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}}}}} 10 } \
+{ Signals::Generic::Or \
+    { S:Generic:CrossOverUp {I:STO/4} 25 }\
+}
+
+#{ S:Generic:Repeated {S:Generic:Increase { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} }} 20 } \

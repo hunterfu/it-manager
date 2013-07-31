@@ -1,0 +1,5 @@
+yum install perl-Date-Calc.noarch
+yum install perl-Date-Manip.noarch
+yum install perl-XML-LibXML.x86_64
+yum install perl-IO-Compress.noarch
+yum install perl-GD.x86_64

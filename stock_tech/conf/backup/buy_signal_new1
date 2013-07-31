@@ -1,0 +1,8 @@
+S:Generic:And \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 200} } 30 } \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 50} } 5} \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 20} } 10} \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 20} {I:SMA 50} } 5} \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:SMA 200} } 10} \
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 200 {I:Prices CLOSE} } } \
+{ S:Generic:Below {I:STO/1} 20 }

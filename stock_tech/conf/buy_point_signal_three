@@ -1,0 +1,13 @@
+# 日线买点扫描信号文件
+# signal 3: break up 
+Signals::Generic::Or \
+{Signals::Generic::And \
+    {S:Generic:CrossOverUp {I:MACD/1} {I:MACD/2}}\
+    {S:Generic:Above {I:STO/3} {I:STO/4}}\
+    {S:Generic:Below {I:STO/3} 50}\
+}\
+{Signals::Generic::And \
+    { S:Generic:Below {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 20 {I:STO/3}}} 50 }\
+    { S:Generic:CrossOverUp {I:STO/3} {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 20 {I:STO/3}}} }\
+}\
+{ S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 20 {I:Prices HIGH}}} }

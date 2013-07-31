@@ -1,0 +1,6 @@
+S:Generic:And \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 200} } 30 }\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 200 {I:Prices CLOSE} } } \
+{ S:Generic:Above {I:MACD/3} 0 }\
+{ S:Generic:Above {I:SMA 5 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } {I:SMA 10 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } }\
+{ S:Generic:CrossOverUp {I:STO/4} 25 }

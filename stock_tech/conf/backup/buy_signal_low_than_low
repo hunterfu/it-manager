@@ -1,0 +1,4 @@
+# 低中低 继续看空
+Signals::Generic::Or \
+    { S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 20 {I:Prices LOW}}}}\
+    { S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 2 {I:Generic:MinInPeriod 20 {I:Prices LOW}}}}

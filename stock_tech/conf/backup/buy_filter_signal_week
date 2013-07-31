@@ -1,0 +1,27 @@
+# week线过滤信号
+Signals::Generic::And \
+{ Signals::Generic::Or \
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 1 {S:Generic:CrossOverUp {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 1 {S:Generic:Below {I:STO/3 9} 50 } }\
+      {I:Generic:PeriodAgo 1 {S:Generic:Above {I:STO/3 9} 20 } }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 2 {S:Generic:CrossOverUp {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 2 {S:Generic:Below {I:STO/3 9} 50 } }\
+      {I:Generic:PeriodAgo 2 {S:Generic:Above {I:STO/3 9} 20 } }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 3 {S:Generic:CrossOverUp {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 3 {S:Generic:Below {I:STO/3 9} 50 }} \
+      {I:Generic:PeriodAgo 3 {S:Generic:Above {I:STO/3 9} 20 }} \
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 4 {S:Generic:CrossOverUp {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 4 {S:Generic:Below {I:STO/3 9} 50 }} \
+      {I:Generic:PeriodAgo 4 {S:Generic:Above {I:STO/3 9} 20 }} \
+  }\
+}\
+{ S:Generic:Above {I:STO/3 9} 20 } 
+#{ S:Generic:Above {I:MACD/3} 0 } 
+#{ S:Generic:Above {I:MACD/3} {I:Generic:PeriodAgo 1 {I:MACD/3}} }

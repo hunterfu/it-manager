@@ -1,0 +1,11 @@
+# crossorver four sma line (5,10,20,60)
+Signals::Generic::And \
+{ S:Generic:Above {I:Prices CLOSE} {I:Prices OPEN} }\
+{ S:Generic:Below {I:Prices LOW} {I:SMA 5}}\
+{ S:Generic:Below {I:Prices LOW} {I:SMA 10}}\
+{ S:Generic:Below {I:Prices LOW} {I:SMA 25}}\
+{ S:Generic:Below {I:Prices LOW} {I:SMA 60}}\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 5}}\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 10}}\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 20}}\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 60}}

@@ -1,0 +1,23 @@
+Signals::Generic::And \
+{ S:Generic:Equal {I:Generic:MinInPeriod 5 {I:Prices CLOSE}}  {I:Generic:MinInPeriod 26 {I:Prices CLOSE}}}\
+{ S:Generic:Above {I:Prices CLOSE} {I:Generic:Eval 1.03*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 4 {I:Prices HIGH} }} } }\
+#{ S:Generic:Below {I:Prices CLOSE} {I:Generic:Eval 1.1*{ I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 4 {I:Prices CLOSE} } }} }
+#{ S:Generic:Above {I:MACD/3} 0 }
+#{ S:Generic:Above {I:Prices CLOSE} {I:SMA 10 }}
+#{ Signals::Generic::Or \
+#    { S:Generic:Above {I:SMA 5 {I:Prices VOLUME}} {I:Generic:Eval 1.5*{I:Generic:PeriodAgo 5 {I:SMA 5 {I:Prices VOLUME}} }} }\
+#    { S:Generic:Increase {I:Prices VOLUME} }\
+#}
+#    { S:Generic:Above {I:MACD/3} 0 }\
+#    { S:Generic:Above {I:Prices CLOSE} {I:SMA 10 }}\
+#{ S:Generic:Above {I:Generic:MinInPeriod 3 {I:RSI}}  {I:Generic:MinInPeriod 10 {I:RSI}} }
+#{ S:Generic:Above {I:MACD/3} 0 } { S:Generic:Increase {I:STO/4} } { S:Generic:Below {I:ADX/1} 40 }\
+#{ S:Generic:Above {I:MACD/3} 0 } { S:Generic:Increase {I:STO/4} } { S:Generic:Above {I:STO/1} 20 }\
+#{ S:Generic:Above { I:Generic:MinInPeriod 3 {I:MACD} } { I:Generic:MinInPeriod 10 {I:MACD} }} \
+#{ S:Generic:Decrease {I:ADX/1} } { S:Generic:Above {I:MACD/3} 0 } { S:Generic:Increase {I:STO/4} } { S:Generic:Above {I:STO/1} 20 }\
+#{ S:Generic:Above {I:MACD/3} 0 } { S:Generic:Increase {I:STO/4} }\
+#{ S:Generic:CrossOverUp {I:MACD/1} {I:MACD/2}} \
+#{ S:Generic:Increase {I:OBV} }
+#{ S:Generic:CrossOverUp {I:OBV} {I:SMA 5 {I:OBV}} }
+#{ S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.25*{I:SMA 6 {I:Prices VOLUME}}}}
+#{ S:Generic:Increase {I:STO/4} } { S:Generic:Increase {I:RSI} } { S:Generic:Increase {I:MACD} }\

@@ -1,0 +1,12 @@
+Signals::Generic::And \
+{ S:Generic:Below {I:SMA 200} {I:Generic:PeriodAgo 45 {I:SMA 200}} } \
+{ S:Generic:Below {I:Generic:PeriodAgo 50 {I:SMA 200}} {I:Generic:PeriodAgo 120 {I:SMA 200}}  } \
+{ S:Generic:Above {I:SMA 10} {I:SMA 35}} \
+{ S:Generic:Equal \
+    { I:Generic:MaxInPeriod 10 {I:Generic:Abs { I:Generic:Eval  {I:SMA 35} - {I:SMA 200} }} } \
+    { I:Generic:MaxInPeriod 120 {I:Generic:Abs { I:Generic:Eval  {I:SMA 35} - {I:SMA 200} }} } \
+}\
+{ S:Generic:Below \
+    {I:Generic:Abs { I:Generic:Eval  {I:SMA 35} - {I:SMA 200} }} \
+    { I:Generic:MaxInPeriod 10 {I:Generic:Abs { I:Generic:Eval  {I:SMA 35} - {I:SMA 200} }} } \
+}

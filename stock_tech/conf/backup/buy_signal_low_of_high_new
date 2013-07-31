@@ -1,0 +1,8 @@
+# 底部，筑底,价格超过20天最高价 
+Signals::Generic::And \
+{ S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 10 {I:Prices LOW}}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 250 {I:Prices LOW}}} }\
+{ S:Generic:Above {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 5 {I:Prices LOW}}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 10 {I:Prices LOW}}} }\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 5}}
+#{ S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 10 {I:Prices HIGH}}}} \
+#{ S:Generic:Above {I:SMA 20} {I:SMA 50} } \
+#{ S:Generic:Repeated {S:Generic:Above {I:SMA 20} {I:Generic:PeriodAgo 5 {I:SMA 20}}} 10 } \

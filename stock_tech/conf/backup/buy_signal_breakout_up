@@ -1,0 +1,6 @@
+# 突破模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Above {I:Prices HIGH} {I:Generic:Eval 1*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH} }} } }\
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 60} {I:Generic:PeriodAgo 3 {I:SMA 60}}} 10 } 
+#{ S:Generic:Above {I:Prices HIGH} {I:Generic:Eval 0.95*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH} }} } }\
+#{ S:Generic:Below {I:Prices HIGH} {I:Generic:Eval 1*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH} }} } }\

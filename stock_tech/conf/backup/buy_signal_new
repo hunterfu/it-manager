@@ -1,0 +1,11 @@
+S:Generic:And \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 200} } 30 }\
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:SMA 200} } 20} \
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 200 {I:Prices CLOSE} } } \
+{ S:Generic:Above {I:MFI} 25 } \
+{ Signals::Generic::Or \
+ {I:Generic:PeriodAgo 1 { S:Generic:Repeated {S:Generic:Below {I:STO/4} 25} 4 }} \
+ {I:Generic:PeriodAgo 1 { S:Generic:Repeated {S:Generic:Below {I:STO/4} 25} 5 }} \
+ {I:Generic:PeriodAgo 1 { S:Generic:Repeated {S:Generic:Below {I:STO/4} 25} 6 }} \
+}\
+{ S:Generic:CrossOverUp {I:STO/4} 25 }

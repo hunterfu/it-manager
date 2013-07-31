@@ -1,0 +1,18 @@
+# 月线过滤信号
+Signals::Generic::Or \
+  { Signals::Generic::And \
+      {S:Generic:CrossOverUp {I:STO/3} {I:STO/4}}\
+      {S:Generic:Below {I:STO/3} 50 }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 1 {S:Generic:CrossOverUp {I:STO/3} {I:STO/4}}}\
+      {I:Generic:PeriodAgo 1 {S:Generic:Below {I:STO/3} 50 } }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 2 {S:Generic:CrossOverUp {I:STO/3} {I:STO/4}}}\
+      {I:Generic:PeriodAgo 2 {S:Generic:Below {I:STO/3} 50 } }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 3 {S:Generic:CrossOverUp {I:STO/3} {I:STO/4}}}\
+      {I:Generic:PeriodAgo 3 {S:Generic:Below {I:STO/3} 50 }} \
+  }

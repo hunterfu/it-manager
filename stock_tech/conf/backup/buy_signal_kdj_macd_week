@@ -1,0 +1,8 @@
+# 跌中高 趋势反转 看多
+Signals::Generic::And \
+{ S:Generic:Above {I:STO/3 9} 20 }\
+{S:Generic:Above {I:STO/3 9} {I:STO/4 9}}\
+{S:Generic:Repeated { S:Generic:Above {I:STO/3} {I:Generic:PeriodAgo 1 {I:STO/3}} } 3 }\
+{S:Generic:Above {I:MACD/1} {I:MACD/2} }\
+{S:Generic:Repeated { S:Generic:Above {I:MACD/2} {I:Generic:PeriodAgo 1 {I:MACD/2}} } 5 }\
+{S:Generic:Below {I:MACD/1} 0 } { S:Generic:Below {I:MACD/2} 0 }

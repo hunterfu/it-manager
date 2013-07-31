@@ -1,0 +1,5 @@
+S:Generic:Repeated \
+{ Signals::Generic::Or \
+    { S:Generic:Below {I:Prices HIGH} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}}\
+    { S:Generic:Equal {I:Prices HIGH} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}}\
+} 7 

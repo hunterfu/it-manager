@@ -1,0 +1,15 @@
+# 矩形  振幅
+S:Generic:And \
+{I:Generic:PeriodAgo 1 \
+    { S:Generic:Below  \
+        {I:Generic:Eval { I:Generic:Eval {I:Generic:MaxInPeriod 65 {I:Prices HIGH}} - {I:Generic:MinInPeriod 65 {I:Prices LOW}}} / \
+        {I:Generic:MinInPeriod 65 {I:Prices LOW}} } 0.1 \
+    }\
+}\
+{ S:Generic:Above {I:Prices CLOSE}  {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 65 {I:Prices HIGH}}} }
+#{I:Generic:PeriodAgo 1 \
+#    { S:Generic:Above  \
+#        {I:Generic:Eval { I:Generic:Eval {I:Generic:MaxInPeriod 120 {I:Prices HIGH}} - {I:Generic:MinInPeriod 120 {I:Prices LOW}}} / \
+#        {I:Generic:MinInPeriod 120 {I:Prices LOW}} } 0.05 \
+#    }\
+#}\

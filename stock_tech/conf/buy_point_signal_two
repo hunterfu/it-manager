@@ -1,0 +1,15 @@
+# 日线买点扫描信号文件
+# signal 2: 低中高 
+Signals::Generic::Or \
+{ Signals::Generic::And \
+    { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Prices LOW}}  {I:Generic:MinInPeriod 20 {I:Prices LOW}}}\
+    { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}} \
+}\
+{ Signals::Generic::And \
+    { S:Generic:Equal {I:Generic:PeriodAgo 2 {I:Prices LOW}}  {I:Generic:MinInPeriod 20 {I:Prices LOW}}}\
+    { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 2 {I:Prices HIGH}}} \
+}\
+{ Signals::Generic::And \
+    { S:Generic:Equal {I:Generic:PeriodAgo 3 {I:Prices LOW}}  {I:Generic:MinInPeriod 20 {I:Prices LOW}}}\
+    { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 3 {I:Prices HIGH}}} \
+}

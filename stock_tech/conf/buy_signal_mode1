@@ -1,0 +1,14 @@
+# 回调模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:Generic:PeriodAgo 5 {I:SMA 50}}} 10 } \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 20} {I:SMA 50} } 10} \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 200} {I:Generic:PeriodAgo 20 {I:SMA 200}}} 10 } \
+{ Signals::Generic::Or \
+    { S:Generic:Below {I:STO/3} 20 } \
+    { S:Generic:Below {I:Generic:PeriodAgo 1 {I:STO/3}} 20 } \
+}\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 50} }\
+{ Signals::Generic::Or \
+    { S:Generic:Above {I:Prices CLOSE} {I:Prices OPEN} }\
+    { S:Generic:Above {I:Generic:PeriodAgo 1 {I:Prices CLOSE} } {I:Generic:PeriodAgo 1 {I:Prices OPEN} } }\
+}

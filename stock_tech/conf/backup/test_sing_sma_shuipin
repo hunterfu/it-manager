@@ -1,0 +1,7 @@
+# 收盘价格在 30天均线下
+S:Generic:And \
+{I:Generic:PeriodAgo 1 {S:Generic:Repeated { S:Generic:Below  {I:Prices CLOSE} {I:SMA 60}} 30 }}\
+{I:Generic:PeriodAgo 1 {S:Generic:Repeated { S:Generic:Below  {I:SMA 30} {I:SMA 60}} 30 }}\
+{S:Generic:Above {I:Prices CLOSE}  {I:SMA 30}}
+#{S:Generic:Repeated { S:Generic:Above {I:SMA 30}  {I:Generic:Eval 0.99*{I:Generic:PeriodAgo 1 {I:SMA 30}}}} 10}\
+#{I:Generic:PeriodAgo 1 {S:Generic:Repeated { S:Generic:Below  {I:SMA 30} {I:SMA 60}} 10 }}\

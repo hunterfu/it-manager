@@ -1,0 +1,9 @@
+# 周线收盘价接近
+Signals::Generic::And \
+{S:Generic:Above {I:Prices CLOSE}  {I:SMA 30} }\
+{ S:Generic:Repeated \
+    { Signals::Generic::And \
+        { S:Generic:Above {I:Prices OPEN}  {I:Generic:Eval 0.98*{I:Prices CLOSE}  }}\
+        { S:Generic:Below {I:Prices OPEN}  {I:Generic:Eval 1.02*{I:Prices CLOSE} }}\
+    } 4\
+}

@@ -1,0 +1,20 @@
+# 跌中高 趋势反转 看多
+Signals::Generic::Or \
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Prices LOW}  {I:Generic:MinInPeriod 20 {I:Prices LOW}}}\
+        { S:Generic:Equal {I:Prices CLOSE} {I:Prices HIGH}}\
+        { S:Generic:Above {I:Prices VOLUME} { I:Generic:PeriodAgo 1 {I:Prices VOLUME}}}\
+        { S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 50 {I:Prices VOLUME}}}}\
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Prices LOW}}  {I:Generic:MinInPeriod 20 {I:Prices LOW}}}\
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}} \
+        { S:Generic:Above {I:Prices VOLUME} { I:Generic:PeriodAgo 1 {I:Prices VOLUME}}}\
+        { S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 50 {I:Prices VOLUME}}}}\
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 2 {I:Prices LOW}}}  {I:Generic:MinInPeriod 20 {I:Prices LOW}}}\
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 2 {I:Prices HIGH}}}} \
+        { S:Generic:Above {I:Prices VOLUME} { I:Generic:PeriodAgo 1 {I:Prices VOLUME}}}\
+        { S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 50 {I:Prices VOLUME}}}}\
+    }

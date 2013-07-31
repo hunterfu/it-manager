@@ -1,0 +1,34 @@
+# 月线 (做多)
+Signals::Generic::And \
+{ S:Generic:Equal {I:Generic:MinInPeriod 5 {I:Prices CLOSE}}  {I:Generic:MinInPeriod 12 {I:Prices CLOSE}}}\
+{ S:Generic:Above {I:MACD/3} {I:Generic:Eval 2*{I:Generic:PeriodAgo 1 {I:MACD/3} }} } \
+{ S:Generic:Above {I:MACD/3} 0 }\
+{ Signals::Generic::Or \
+    { S:Generic:Above { I:Generic:MinInPeriod 5 {I:MACD} } { I:Generic:MinInPeriod 12 {I:MACD} }} \
+    { S:Generic:Above { I:Generic:MinInPeriod 5 {I:RSI} } { I:Generic:MinInPeriod 12 {I:RSI} }} \
+}
+#{ S:Generic:CrossOverUp {I:MACD/1} {I:MACD/2}}
+#{ S:Generic:Equal {I:Generic:MinInPeriod 3 {I:Prices CLOSE}}  {I:Generic:MinInPeriod 10 {I:Prices CLOSE}}}\
+#{ S:Generic:Above {I:MACD/3} 0 }
+#{ Signals::Generic::Or \
+#    { S:Generic:Above {I:SMA 5 {I:Prices VOLUME}} {I:Generic:Eval 1.25*{I:Generic:PeriodAgo 5 {I:SMA 5 {I:Prices VOLUME}} }} }\
+#    { S:Generic:Increase {I:Prices VOLUME} }\
+#}\
+#{ Signals::Generic::Or \
+#    { S:Generic:Above { I:Generic:MinInPeriod 3 {I:MACD} } { I:Generic:MinInPeriod 10 {I:MACD} }} \
+#    { S:Generic:Above { I:Generic:MinInPeriod 3 {I:RSI} } { I:Generic:MinInPeriod 10 {I:RSI} }} \
+#}
+#{ S:Generic:Above { I:Generic:MinInPeriod 5 {I:MACD} } { I:Generic:MinInPeriod 15 {I:MACD} }} \
+#
+#{ S:Generic:Equal {I:Generic:MinInPeriod 20 {I:Prices LOW}}  {I:Generic:MinInPeriod 30 {I:Prices LOW}}}
+#{ S:Generic:Above {I:Prices LOW} {I:Generic:Eval 1*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 30 {I:Prices LOW} }} } }
+#{ S:Generic:Below {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 10 {I:Prices HIGH}}}  {I:Generic:Eval 1.03*{I:Generic:PeriodAgo 11 {I:Generic:MaxInPeriod 20 {I:Prices HIGH}}}}}\
+#{ S:Generic:Above {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 10 {I:Prices HIGH}}}  {I:Generic:Eval 0.98*{I:Generic:PeriodAgo 11 {I:Generic:MaxInPeriod 20 {I:Prices HIGH}}}}}
+#{ S:Generic:Below {I:Prices LOW} {I:Generic:Eval 0.98*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 30 {I:Prices LOW} }} } }\
+#{ S:Generic:Above {I:Prices LOW} {I:Generic:Eval 0.95*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 30 {I:Prices LOW} }} } }
+#{ S:Generic:Above {I:Prices HIGH} {I:Generic:Eval 0.95*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH} }} } }\
+#{ S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices HIGH}} { I:Generic:PeriodAgo 2 { I:Generic:MaxInPeriod 50 {I:Prices HIGH} }} }\
+#{ S:Generic:Above {I:Prices CLOSE} { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}}} }\
+#{ S:Generic:Above {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} { I:Generic:PeriodAgo 2 { I:Generic:MinInPeriod 50 {I:Prices CLOSE} }} }\
+#{ S:Generic:Equal {I:Generic:MinInPeriod 20 {I:Prices LOW}}  {I:Generic:MinInPeriod 130 {I:Prices LOW}}}\
+#{ S:Generic:Above {I:Prices CLOSE} {I:SMA 50} }\

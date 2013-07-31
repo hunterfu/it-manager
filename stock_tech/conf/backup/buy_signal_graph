@@ -1,0 +1,5 @@
+Signals::Generic::And \
+{ Signals::Graphical::CandleSticks::BearishEngulfingLine } \
+{ S:Generic:Above { I:Generic:MinInPeriod 30 {I:MACD} } { I:Generic:MinInPeriod 90 {I:MACD} }} \
+{ S:Generic:Equal {I:Generic:MinInPeriod 5 {I:Prices LOW}}  {I:Generic:MinInPeriod 120 {I:Prices LOW}} }
+

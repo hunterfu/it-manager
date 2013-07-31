@@ -1,0 +1,8 @@
+# 底部上涨突破模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Decrease {I:SMA 50} } 30 } \
+{ S:Generic:Repeated {S:Generic:Below {I:SMA 20} {I:SMA 50} } 20} \
+{ S:Generic:Below {I:SMA 50} {I:SMA 200}}\
+{ S:Generic:Below {I:SMA 50}  {I:Generic:PeriodAgo 40 {I:SMA 50}} }\
+{ S:Generic:Above {I:MACD}  {I:Generic:PeriodAgo 40 {I:MACD}} } \
+{ S:Generic:Above {I:OBV}  {I:Generic:PeriodAgo 40 {I:OBV}} }

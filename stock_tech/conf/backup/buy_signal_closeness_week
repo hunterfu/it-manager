@@ -1,0 +1,9 @@
+# 周线收盘价接近
+Signals::Generic::And \
+{ I:Generic:PeriodAgo 1 {S:Generic:Equal {I:Generic:MinInPeriod 5 {I:Prices LOW}}  {I:Generic:MinInPeriod 52 {I:Prices LOW}}} }\
+{ S:Generic:Repeated \
+    { Signals::Generic::And \
+        { S:Generic:Above {I:Prices OPEN}  {I:Generic:Eval 0.98*{I:Prices CLOSE}  }}\
+        { S:Generic:Below {I:Prices OPEN}  {I:Generic:Eval 1.02*{I:Prices CLOSE} }}\
+    } 4\
+}

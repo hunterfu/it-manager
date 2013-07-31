@@ -1,0 +1,7 @@
+# 周线收盘价接近
+Signals::Generic::And \
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 6} }\
+{ S:Generic:Above {I:Prices CLOSE}  {I:Generic:Eval 0.98*{ I:Generic:PeriodAgo 1 {I:Prices CLOSE }} } }\
+{ S:Generic:Below {I:Prices CLOSE}  {I:Generic:Eval 1.02*{ I:Generic:PeriodAgo 1 {I:Prices CLOSE }} } }\
+{ S:Generic:Above {I:Prices CLOSE}  {I:Generic:Eval 0.98*{ I:Generic:PeriodAgo 2 {I:Prices CLOSE }} } }\
+{ S:Generic:Below {I:Prices CLOSE}  {I:Generic:Eval 1.02*{ I:Generic:PeriodAgo 2 {I:Prices CLOSE }} } }

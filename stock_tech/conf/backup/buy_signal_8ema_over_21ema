@@ -1,0 +1,7 @@
+# 上涨趋势中 回调 跌中高 看多
+Signals::Generic::And \
+{ S:Generic:CrossOverUp {I:Generic:PeriodAgo 2 {I:EMA 8} } {I:Generic:PeriodAgo 2 {I:EMA 21} } }\
+{ Signals::Generic::Or \
+    { S:Generic:Equal {I:Generic:MinInPeriod 50 {I:Prices CLOSE}}  {I:Generic:MinInPeriod 150 {I:Prices CLOSE}}}\
+    { S:Generic:Equal {I:Generic:MinInPeriod 50 {I:Prices LOW}}  {I:Generic:MinInPeriod 150 {I:Prices LOW}}}\
+}

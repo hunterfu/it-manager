@@ -1,0 +1,8 @@
+# 跌中高 趋势反转 看多
+Signals::Generic::And \
+{S:Generic:CrossOverUp {I:STO/3} {I:STO/4}}\
+{Signals::Generic::And {S:Generic:Below {I:STO/3} 50} {S:Generic:Below {I:STO/4} 50} }\
+{ Signals::Generic::Or \
+    {S:Generic:Above {I:MACD/3} 0 }\
+    {Signals::Generic::And  {S:Generic:Above {I:MACD/1} 0} {S:Generic:Above {I:MACD/2} 0} }\
+}

@@ -1,0 +1,9 @@
+# 均线距离变大
+S:Generic:And \
+{ S:Generic:Repeated {S:Generic:Above {I:Generic:Eval  {I:SMA 20} - {I:SMA 50}} {I:Generic:PeriodAgo 3 {I:Generic:Eval  {I:SMA 20} - {I:SMA 50}} }} 5 } \
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 50} } \
+{ Signals::Generic::Or \
+    { I:Generic:PeriodAgo 8 {S:Generic:Below {I:SMA 20} {I:SMA 50}} }\
+    { I:Generic:PeriodAgo 9 {S:Generic:Below {I:SMA 20} {I:SMA 50}} }\
+    { I:Generic:PeriodAgo 10 {S:Generic:Below {I:SMA 20} {I:SMA 50}} }\
+}

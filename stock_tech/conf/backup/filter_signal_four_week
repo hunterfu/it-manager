@@ -1,0 +1,5 @@
+# 四周交易规则
+Signals::Generic::And \
+    {S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH} }}} 
+    #{S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 50 {I:Prices VOLUME}}}}\
+

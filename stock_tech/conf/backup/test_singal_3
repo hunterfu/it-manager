@@ -1,0 +1,4 @@
+Signals::Generic::And \
+{S:Generic:Repeated { S:Generic:Below {I:Prices HIGH}  {I:Generic:Eval 1.01*{I:Generic:PeriodAgo 1 {I:Prices HIGH}}}} 10}\
+{S:Generic:Repeated { S:Generic:Above {I:Prices LOW}  {I:Generic:Eval 0.99*{I:Generic:PeriodAgo 1 {I:Prices LOW}}}} 10}
+#{ S:Generic:Below {I:STO/3} 20 }

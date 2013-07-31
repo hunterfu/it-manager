@@ -1,0 +1,6 @@
+# 压缩弹簧模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Above {I:Generic:PeriodAgo 10 {I:Prices HIGH }} {I:Generic:Eval 1.01*{ I:Generic:PeriodAgo 11 { I:Generic:MaxInPeriod 50 {I:Prices HIGH} }} } }\
+{ S:Generic:Equal {I:Generic:MinInPeriod 3 {I:Prices HIGH}} {I:Generic:MinInPeriod 10 {I:Prices HIGH}} }\
+{ S:Generic:Above {I:Prices LOW} {I:SMA 50}}
+#{ S:Generic:Below {I:Prices LOW} {I:Generic:PeriodAgo 5 {I:Prices LOW}} }\

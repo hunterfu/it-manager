@@ -1,0 +1,3 @@
+Signals::Generic::Or \
+{ S:Generic:Equal {I:Prices OPEN} {I:Prices CLOSE}}\
+{ I:Generic:PeriodAgo 1 { S:Generic:Equal {I:Prices OPEN} {I:Prices CLOSE}} }

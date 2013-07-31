@@ -1,0 +1,9 @@
+# 看涨背离模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 200} } 30 } \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:SMA 200} } 20} \
+{ S:Generic:Above {I:SMA 50} {I:SMA 200} }\
+{ S:Generic:Below {I:Prices LOW} {I:Generic:PeriodAgo 20 {I:Prices LOW}} }\
+{ S:Generic:Below {I:Prices LOW} {I:Generic:PeriodAgo 3 {I:Prices LOW}} }\
+{ S:Generic:Above { I:Generic:MinInPeriod 5 {I:MACD/3} } { I:Generic:MinInPeriod 20 {I:MACD/3} }} \
+{ S:Generic:Above {I:Generic:MinInPeriod 5 {I:RSI}}  {I:Generic:MinInPeriod 20 {I:RSI}} }

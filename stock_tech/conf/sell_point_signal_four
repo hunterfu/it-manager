@@ -1,0 +1,4 @@
+# 日线买点扫描信号文件
+# signal 4: 跳空缺口 
+Signals::Generic::And \
+{ S:Generic:CrossOverUp {I:OBV} {I:SMA 30 {I:OBV}} }

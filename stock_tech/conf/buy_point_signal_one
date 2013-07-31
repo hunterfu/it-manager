@@ -1,0 +1,12 @@
+# 日线买点扫描信号文件
+# kdj cross over 
+Signals::Generic::And \
+    {Signals::Generic::And \
+        {S:Generic:CrossOverUp {I:STO/3} {I:STO/4}}\
+        {S:Generic:Below {I:STO/3} 75 }\
+    }\
+    { Signals::Generic::Or \
+        {S:Generic:Above {I:MACD/3} {I:Generic:PeriodAgo 1 {I:MACD/3}} }\
+        {S:Generic:Above {I:MACD/1} {I:MACD/2} }\
+    }
+

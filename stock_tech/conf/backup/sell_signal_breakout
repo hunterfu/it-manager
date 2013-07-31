@@ -1,0 +1,16 @@
+# 突破模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Below {I:SMA 200} {I:Generic:PeriodAgo 5 {I:SMA 200}}} 20 } \
+{ S:Generic:Repeated {S:Generic:Below {I:SMA 50} {I:SMA 200}} 10 } \
+{ S:Generic:Repeated {S:Generic:Below {I:Prices CLOSE} {I:SMA 50}} 10 } \
+{ S:Generic:Below {I:Prices CLOSE} { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}}} }
+#{ S:Generic:Repeated {S:Generic:Below {I:SMA 50} {I:Generic:PeriodAgo 5 {I:SMA 50}}} 10 } \
+#{ S:Generic:Below {I:Generic:MaxInPeriod 10 {I:Prices HIGH}}  {I:Generic:MaxInPeriod 26 {I:Prices HIGH}}}
+#{ S:Generic:Below {I:Generic:MaxInPeriod 20 {I:MACD/3}}  {I:Generic:MaxInPeriod 65 {I:MACD/3}}}
+#{ S:Generic:Equal {I:Generic:MaxInPeriod 12 {I:Prices HIGH}}  {I:Generic:MaxInPeriod 26 {I:Prices HIGH}}}\
+#{ S:Generic:Below {I:Generic:MaxInPeriod 5 {I:Prices HIGH}}  {I:Generic:MaxInPeriod 12 {I:Prices HIGH}}}\
+#{ S:Generic:Above {I:Prices HIGH} {I:Generic:Eval 0.98*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 5 {I:Prices HIGH} }} } }\
+#{ S:Generic:Below {I:Prices HIGH} {I:Generic:Eval 1.05*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 5 {I:Prices HIGH} }} } }\
+#{ S:Generic:Equal {I:Generic:MinInPeriod 5 {I:Prices CLOSE}}  {I:Generic:MinInPeriod 26 {I:Prices CLOSE}}}\
+#{ S:Generic:Above {I:Prices CLOSE} {I:SMA 10} }\
+#{ S:Generic:Repeated {S:Generic:Below {I:SMA 10} {I:SMA 40}} 10} \

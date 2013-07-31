@@ -1,0 +1,7 @@
+S:Generic:And \
+{ S:Generic:Equal {I:Generic:MinInPeriod 30 {I:Prices CLOSE}}  {I:Generic:MinInPeriod 130 {I:Prices CLOSE}}}\
+{ S:Generic:Repeated {S:Generic:Above { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} }\
+{ I:Generic:PeriodAgo 5 { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}}}}} 5 } 
+#{ S:Generic:Above {I:MACD/3} 0 } 
+#{ S:Generic:CrossOverUp {I:STO/4} 25}
+#{ S:Generic:Repeated {S:Generic:Increase { I:SMA 50 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} }} 20 } \

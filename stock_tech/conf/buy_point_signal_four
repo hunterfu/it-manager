@@ -1,0 +1,15 @@
+# 日线买点扫描信号文件
+# signal 4: 跳空缺口 
+Signals::Generic::Or \
+{ Signals::Generic::And \
+    { I:Generic:PeriodAgo 2 { S:Prices:GapUp }} \
+    { I:Generic:PeriodAgo 2 { S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 10 {I:Prices VOLUME}}}}  } \
+}\
+{ Signals::Generic::And \
+    { I:Generic:PeriodAgo 1 { S:Prices:GapUp }} \
+    { I:Generic:PeriodAgo 1 { S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 10 {I:Prices VOLUME}}}}  } \
+}\
+{ Signals::Generic::And \
+    { S:Prices:GapUp } \
+    { S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 10 {I:Prices VOLUME}}}} \
+}

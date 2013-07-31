@@ -1,0 +1,6 @@
+# 回调模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 40} } 20} \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 10} {I:SMA 40} } 5} \
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 40} }\
+{ S:Generic:Below {I:STO/1} 30 }

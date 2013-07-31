@@ -1,0 +1,8 @@
+# 月线过滤信号
+# # 突破模式 (做多)
+Signals::Generic::And \
+{ S:Generic:Above {I:Prices CLOSE} { I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 6 {I:Prices HIGH} }}}\
+{ S:Generic:Below \
+    {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 6 {I:Prices HIGH} }} \
+    {I:Generic:Eval 1.25*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 6 {I:Prices LOW} }} } \
+}

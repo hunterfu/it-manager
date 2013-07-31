@@ -1,0 +1,47 @@
+# 强势股上攻 回调模式 (做多) (回调10% - 15%) 缩量
+Signals::Generic::And \
+{ Signals::Generic::Or \
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 12 {I:Prices LOW}}} }\
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 2 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 12 {I:Prices LOW}}} }\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} {I:Generic:PeriodAgo 2 {I:Prices HIGH}} } \
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 2 {I:Prices HIGH}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 3 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 12 {I:Prices LOW}}} }\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} {I:Generic:PeriodAgo 3 {I:Prices HIGH}} } \
+        { S:Generic:Below {I:Generic:PeriodAgo 2 {I:Prices CLOSE}} {I:Generic:PeriodAgo 3 {I:Prices HIGH}} } \
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 3 {I:Prices HIGH}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 4 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 12 {I:Prices LOW}}} }\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} {I:Generic:PeriodAgo 4 {I:Prices HIGH}} } \
+        { S:Generic:Below {I:Generic:PeriodAgo 2 {I:Prices CLOSE}} {I:Generic:PeriodAgo 4 {I:Prices HIGH}} } \
+        { S:Generic:Below {I:Generic:PeriodAgo 3 {I:Prices CLOSE}} {I:Generic:PeriodAgo 4 {I:Prices HIGH}} } \
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 4 {I:Prices HIGH}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 5 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 12 {I:Prices LOW}}} }\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} {I:Generic:PeriodAgo 5 {I:Prices HIGH}} } \
+        { S:Generic:Below {I:Generic:PeriodAgo 2 {I:Prices CLOSE}} {I:Generic:PeriodAgo 5 {I:Prices HIGH}} } \
+        { S:Generic:Below {I:Generic:PeriodAgo 3 {I:Prices CLOSE}} {I:Generic:PeriodAgo 5 {I:Prices HIGH}} } \
+        { S:Generic:Below {I:Generic:PeriodAgo 4 {I:Prices CLOSE}} {I:Generic:PeriodAgo 5 {I:Prices HIGH}} } \
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 5 {I:Prices HIGH}}} \
+    }\
+}\
+{ S:Generic:Repeated { S:Generic:Below {I:SMA 6} { I:SMA 12}} 10}\
+{ S:Generic:Below {I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 5 {I:Prices LOW} }} {I:Generic:Eval 0.65*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 12 {I:Prices HIGH} }} } } 
+#{ S:Generic:Above {I:Prices CLOSE} {I:EMA 6} } \
+#{ S:Generic:Repeated {S:Generic:Above {I:SMA 20} {I:Generic:PeriodAgo 5 {I:SMA 20}}} 10 } \
+#    { Signals::Generic::And \
+#        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 52 {I:Prices LOW}}} }\
+#        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}} \
+#    }\
+#    { Signals::Generic::And \
+#        { S:Generic:Equal {I:Generic:PeriodAgo 2 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 52 {I:Prices LOW}}} }\
+#        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 2 {I:Prices HIGH}}} \
+#    }\
+

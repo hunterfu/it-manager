@@ -1,0 +1,3 @@
+# 高中高 继续看多
+#Signals::Generic::And \
+    { S:Generic:Repeated { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices CLOSE}}} 3}

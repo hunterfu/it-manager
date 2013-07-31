@@ -1,0 +1,246 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import stock
+import sys
+import os
+import shutil
+import pickle
+import re
+import time
+import pysqlite2.dbapi2 as sqlite
+import getopt
+from operator import itemgetter
+from decimal import *
+import urllib
+import json
+
+
+def request(cache_file):
+    """ get data from google """
+
+    stock_exchange = "((exchange:NYSE) OR (exchange:NASDAQ) OR (exchange:AMEX))"
+    #stock_pe = "(PE > 0 | PE = 0)& (PE < 3686 | PE = 3686)"
+    stock_roi_ttm ="(ReturnOnInvestmentTTM > 0 | ReturnOnInvestmentTTM = 0)"    #投资回报率 
+    stock_volume = " (Volume > 0 | Volume = 0)"
+    stock_avg_volume = "(AverageVolume > 100000 | AverageVolume = 100000)"
+    stock_price = "(QuoteLast > 1.5 | QuoteLast = 1.5)"
+    #stock_price = "(QuoteLast > 1.5 | QuoteLast = 1.5) & (QuoteLast < 150000 | QuoteLast = 150000)"
+    stock_50_avg = "(Price50DayAverage > 0 | Price50DayAverage = 0)" 
+    stock_200_avg = "(Price200DayAverage > 0 | Price200DayAverage = 0)"
+    stock_dps = "(DividendPerShare > 0 | DividendPerShare = 0)"     #股息
+    stock_eps = "(EPS > -5| EPS = -5)"  # 每股收益
+    stock_bps = "(BookValuePerShareYear > 0 | BookValuePerShareYear = 0)" # 每股净资产
+
+    q = "%s [%s & %s & %s & %s & %s & %s & %s & %s & %s]" % (stock_exchange,stock_roi_ttm,stock_volume,stock_avg_volume,stock_price,stock_50_avg,stock_200_avg,stock_dps,stock_eps,stock_bps)
+    q = urllib.quote(q)
+    url = 'http://www.google.com/finance?&gl=us&hl=en&output=json&start=0&num=3000&noIL=1&q=%s&restype=company' % q
+    f = urllib.urlopen(url)
+    content = f.readlines()
+    fout = open(cache_file, "w")
+    for line in content:
+        #line = eval(line.__repr__())
+        #print line
+        fout.write(line)
+    fout.close()
+    #cmd = r"sed -i -e '/query_for_display/d' -e '/original_query/d' %s" % (cache_file)
+    #os.system(cmd)
+    #cmd = r"sed -i -e 's/\\x[0-9][0-9]//' %s" % (cache_file)
+    #os.system(cmd)
+    return True
+
+
+def analyse_stock(cache_file):
+    """
+    read data from json file and update to sqlite db
+    """
+    json_data=open(cache_file).read()
+    data = eval(json_data)
+
+    #print "num_company_results = " + data['num_company_results']
+    stock_list = [] 
+    # one stock
+    stock_data_list = data['searchresults']
+    for stock_data in stock_data_list:
+        stock_dict = {}
+        stock_dict['symbol'] = stock_data['ticker']
+        stock_dict['title'] = stock_data['title']
+        stock_dict['exchange'] = stock_data['exchange']
+        field_data_list = stock_data['columns'] 
+        for field_data in field_data_list:
+            field = field_data['field'] 
+            val =  field_data['value']
+            stock_dict[field] = val
+        stock_list.append(stock_dict)
+
+    return stock_list 
+
+
+def connect_db(db_file):
+    """
+    connect db
+    """
+    if os.path.isfile(db_file):
+        cx = sqlite.connect(db_file)
+        cu = cx.cursor()
+        return (cu,cx)
+    else:
+        #create
+        cx = sqlite.connect(db_file)
+        cu = cx.cursor()
+        cu.execute('''
+            create table stock(
+            id integer primary key,
+            exchange_name varchar(20),
+            stock_title varchar(50),
+            stock_symbol varchar(20),
+            stock_price NUMERIC,
+            stock_50_avg NUMERIC,
+            stock_200_avg NUMERIC,
+            stock_volume INTEGER,
+            stock_avg_volume INTEGER,
+            stock_eps NUMERIC,
+            stock_bps NUMERIC,
+            stock_dps NUMERIC,
+            stock_roi_ttm NUMERIC
+            )''')
+        return (cu,cx)
+
+
+def update_db(stock_list):
+    """ update db from json file """
+    # del data from db
+    sql_cmd = "delete from stock"
+    db_cursor.execute(sql_cmd)
+    cx.commit()
+    
+    # insert db
+    for stock_dict in stock_list:
+        # determin record is already in db or not
+        stock_exchange = stock_dict['exchange']
+        stock_symbol = stock_dict['symbol']
+        stock_title = stock_dict['title']
+        stock_roi_ttm = stock_dict['ReturnOnInvestmentTTM'].replace(",","")
+        #stock_volume = stock_dict['Volume'].replace(",","") 
+        #stock_avg_volume = stock_dict['AverageVolume'].replace(",","")
+        stock_volume = "0"
+        stock_avg_volume = "0"
+        stock_price = stock_dict['QuoteLast'] 
+        stock_50_avg = stock_dict['Price50DayAverage'] 
+        stock_200_avg = stock_dict['Price200DayAverage'] 
+        stock_eps = stock_dict['EPS'] 
+        stock_bps = stock_dict['BookValuePerShareYear']
+        stock_dps = stock_dict['DividendPerShare'] 
+        sql_cmd = 'insert into stock values(NULL,"%s","%s","%s",%s,%s,%s,%s,%s,%s,%s,%s,%s)' % (stock_exchange,stock_title,stock_symbol,stock_price,stock_50_avg,stock_200_avg,stock_volume,stock_avg_volume,stock_eps,stock_bps,stock_dps,stock_roi_ttm)
+        print "sql_cmd = " + sql_cmd
+        db_cursor.execute(sql_cmd)
+        cx.commit()
+
+def usage():
+    print '''
+Usage: magic_stock.py [options...]
+Options: 
+    -e : Exchange Name 
+    -c : User-Defined Category Name
+    -f : Read stock info from file and save to db
+    -d : delete from db by stock code
+    -n : stock name
+    -s : stock code
+    -a : check all stock
+    -t : count info
+    -z : country info
+    -h : this help info
+    analyse_stock.py -s ras -n "RAIT Financial Trust" 
+    '''
+
+#try:
+#    opts, args = getopt.getopt(sys.argv[1:],'htae:c:f:dn:s:z:')
+#except getopt.GetoptError:
+#    usage()
+#    sys.exit()
+#if len(opts) == 0:
+#    usage()
+#    sys.exit()
+
+#stock_name = ""
+#stock_code = ""
+#stock_file = ""
+#stock_category = ""
+#stock_exchange = ""
+#stock_country = ""
+#is_del_stock = False    
+#is_check_all = False
+#is_count = False    # 统计
+
+#for opt, arg in opts: 
+#    if opt in ('-h', '--help'):
+#        usage()
+#        sys.exit()
+#    elif opt == '-d':
+#        is_del_stock = True
+#    elif opt == '-a':
+#        is_check_all = True
+#    elif opt == '-t':
+#        is_count = True
+#    elif opt == '-f':
+#        stock_file = arg
+#    elif opt == '-c':
+#        stock_category = arg
+#    elif opt == '-e':
+#        stock_exchange = arg
+#    elif opt == '-s':
+#        stock_code =  arg
+#    elif opt == '-n':
+#        stock_name = arg
+#    elif opt == '-z':
+#        stock_country = arg
+
+#(db_cursor,cx) = connect_db(db_file)
+#cx.text_factory=str
+
+if __name__ == "__main__":
+    base_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+    cache_dir = "%s/cache" % (base_dir)
+    db_file = "%s/magic_db" % (base_dir)
+    cache_file = "%s/%s" % (cache_dir,"google_json")
+    (db_cursor,cx) = connect_db(db_file)
+    cx.text_factory=str
+    if not os.path.isfile(cache_file) or (int(time.time()) - int(os.stat(cache_file).st_mtime) >= 86400) :
+        request(cache_file)
+        update_db(analyse_stock(cache_file))
+
+    # define rank dict
+    eps_dict = {}    # 收益
+    roi_dict = {}   # 投资回报率
+    bps_dict = {}   # 每股净资产
+    # sort 
+    eps_yield_sql = "select (select COUNT(0) from stock t1 where t1.stock_eps > t2.stock_eps) as 'RowNum',stock_symbol from stock t2 order by stock_eps DESC"
+    db_cursor.execute(eps_yield_sql)
+    rs = db_cursor.fetchall()
+    for item in rs:
+        (eps_rank,stock_symbol)  = item
+        eps_dict[stock_symbol] = eps_rank
+
+    roi_sql = "select (select COUNT(0) from stock t1 where t1.stock_roi_ttm > t2.stock_roi_ttm) as 'RowNum',stock_symbol from stock t2 order by stock_roi_ttm DESC"
+    db_cursor.execute(roi_sql)
+    rs = db_cursor.fetchall()
+    for item in rs:
+        (roi_rank,stock_symbol)  = item
+        roi_dict[stock_symbol] = roi_rank
+    
+    bps_sql = "select (select COUNT(0) from stock t1 where t1.stock_bps > t2.stock_bps) as 'RowNum',stock_symbol from stock t2 order by stock_bps DESC"
+    db_cursor.execute(bps_sql)
+    rs = db_cursor.fetchall()
+    for item in rs:
+        (bps_rank,stock_symbol)  = item
+        bps_dict[stock_symbol] = bps_rank
+    # output
+    print "exchange\tname\tsymbol\tprice\teps-rank\troi-rank\tbps-rank\tsumpoint"
+    sql = "select exchange_name,stock_title,stock_price,stock_symbol from stock"
+    db_cursor.execute(sql)
+    rs = db_cursor.fetchall()
+    for item in rs:
+        (exchange,title,price,symbol) = item
+        result = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (exchange,title,symbol,price,eps_dict[symbol],roi_dict[symbol],bps_dict[symbol],eps_dict[symbol]+roi_dict[symbol]+bps_dict[symbol])
+        print result
+
+    cx.close()

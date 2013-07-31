@@ -1,0 +1,10 @@
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Increase {I:SMA 200} } 20 } \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:SMA 200}} 10 } \
+{ Signals::Generic::Or \
+ {I:Generic:PeriodAgo 1 { S:Generic:Repeated {S:Generic:Below {I:STO/4} 25} 2 }} \
+ {I:Generic:PeriodAgo 1 { S:Generic:Repeated {S:Generic:Below {I:STO/4} 25} 3 }} \
+ {I:Generic:PeriodAgo 1 { S:Generic:Repeated {S:Generic:Below {I:STO/4} 25} 4 }} \
+}\
+{ S:Generic:Increase {I:STO/4} } { S:Generic:Increase {I:RSI} }
+#{ S:Generic:Above {I:STO/4} 25 } {S:Generic:Below {I:RSI} 52}\

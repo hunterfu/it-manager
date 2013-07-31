@@ -1,0 +1,7 @@
+# 均线接近
+S:Generic:And \
+{ S:Generic:Repeated \
+    { S:Generic:Below  { I:Generic:Eval {I:SMA 60} - {I:SMA 30}}  {I:Generic:PeriodAgo 1 { I:Generic:Eval {I:SMA 60} - {I:SMA 30}} }}\
+10 }\
+{ S:Generic:Repeated {S:Generic:Below {I:SMA 30} {I:SMA 60}} 20 }\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 30}}

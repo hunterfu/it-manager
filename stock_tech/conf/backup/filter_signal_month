@@ -1,0 +1,6 @@
+# 月线过滤信号
+Signals::Generic::And \
+{I:Generic:PeriodAgo 1 { S:Generic:Repeated  {S:Generic:Below {I:OBV} {I:Generic:Eval 1.03*{I:SMA 10 {I:OBV}}} } 6}}\
+{S:Generic:CrossOverUp {I:OBV} {I:SMA 10 {I:OBV}} }\
+{S:Generic:Above {I:STO/3} {I:STO/4} }
+#{S:Generic:Below {I:STO/3} 50 } {S:Generic:Below {I:STO/4} 50 }

@@ -1,0 +1,3 @@
+Signals::Generic::Or \
+{ S:Generic:Equal { I:Generic:MinInPeriod 30 {I:MACD} } { I:Generic:MinInPeriod 60 {I:MACD} }} \
+{ S:Generic:Equal { I:Generic:MinInPeriod 30 {I:RSI} } { I:Generic:MinInPeriod 60 {I:RSI} }} \

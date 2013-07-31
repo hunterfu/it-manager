@@ -1,0 +1,5 @@
+Signals::Generic::And \
+{ S:Generic:Equal {I:Generic:MinInPeriod 20 {I:Prices LOW}}  {I:Generic:MinInPeriod 40 {I:Prices LOW}}}\
+{ S:Generic:Below {I:STO/3 9} 25 } { S:Generic:Above {I:STO/3 9} {I:STO/4 9}}\
+{ S:Generic:Above {I:MACD/3} {I:Generic:PeriodAgo 1 {I:MACD/3}} }\
+{ S:Generic:Above {I:Generic:MaxInPeriod 15 {I:Prices VOLUME}} {I:Generic:Eval 3*{I:SMA 10 {I:Prices VOLUME}}}}

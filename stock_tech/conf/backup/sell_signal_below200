@@ -1,0 +1,8 @@
+Signals::Generic::And \
+{ S:Generic:Repeated {S:Generic:Decrease {I:SMA 200} } 20 } \
+{ S:Generic:Repeated {S:Generic:Below {I:SMA 50} {I:SMA 200}} 10 } \
+{ S:Generic:CrossOverDown {I:STO/4} 75 } 
+#{ S:Generic:Below {I:STO/4} 30 } { S:Generic:Below {I:RSI}  40 } 
+#{ S:Generic:CrossOverUp {I:STO/4} 25 }
+#{ S:Generic:Below {I:RSI}  40 } 
+#{ S:Generic:Above {I:ADX/1} 20 } { S:Generic:Increase {I:ADX/1} }\

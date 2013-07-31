@@ -1,0 +1,47 @@
+templateName: "Trade System Global Config"
+description: "交易系统全局配置"
+version: "0.1"
+
+# 初始总资金
+int_all_money: 30000
+# 总资金止损 2% 开仓标准
+stop_loss: 0.02
+# 止盈利 8%
+stock_stop_gain: 0.08
+# 个股止损(最大止损) 8% 
+stock_stop_loss: 0.08
+# 佣金/手续费
+commision: 0.005
+
+# 开仓策略
+open_stock_strategy:
+
+ - description: "低中高"
+   signal_name: "low_of_high"
+   action: "long"
+
+ - description: "高中低"
+   signal_name: "high_of_low"
+   action: "short"
+
+# 平仓策略
+close_stock_strategy:
+
+ - description: "低中高"
+   action: "long"
+
+ - description: "高中低"
+   action: "short"
+
+# 交易系统信号配置文件
+filer_signal: 
+
+ - signal_name: "low_of_high"
+   signal_file: "buy_signal_low_of_high_week"
+   peroid: "week"
+   order: 1
+
+ - signal_name: "low_of_high"
+   signal_file: "buy_signal_low_of_high_day"
+   peroid: "day"
+   order: 2

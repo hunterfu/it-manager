@@ -1,0 +1,18 @@
+# 上涨趋势中 回调 跌中高 看多
+Signals::Generic::And \
+{ Signals::Generic::Or \
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 20 {I:Prices LOW}}} }\
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 2 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 20 {I:Prices LOW}}} }\
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 2 {I:Prices HIGH}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 3 {I:Prices LOW}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 20 {I:Prices LOW}}} }\
+        { S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 3 {I:Prices HIGH}}} \
+    }\
+}\
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 200} {I:Generic:PeriodAgo 5 {I:SMA 200}}} 10 } \
+{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:SMA 200} } 10} 

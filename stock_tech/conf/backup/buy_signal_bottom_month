@@ -1,0 +1,10 @@
+# 强势股上攻 回调模式 (做多) (回调10% - 15%) 缩量
+Signals::Generic::And \
+{ S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 2 {I:Prices LOW}}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 15 {I:Prices LOW}}} }\
+{ S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} { I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 2 {I:Prices HIGH}}} } \
+{ S:Generic:Below {I:Generic:PeriodAgo 2 {I:Prices CLOSE}} { I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 2 {I:Prices HIGH}}} } \
+#{ S:Generic:Below {I:Generic:PeriodAgo 3 {I:Prices CLOSE}} { I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 3 {I:Prices HIGH}}} } \
+{ S:Generic:Above {I:Prices CLOSE} { I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 2 {I:Prices HIGH}}}}\
+{ S:Generic:Repeated { S:Generic:Below {I:SMA 5} { I:SMA 10}} 10}\
+{ S:Generic:Below {I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 2 {I:Prices LOW} }} {I:Generic:Eval 0.5*{ I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 15 {I:Prices HIGH} }} } }
+#{ S:Generic:Below {I:Generic:PeriodAgo 4 {I:Prices CLOSE}} {I:Generic:PeriodAgo 5 {I:Prices HIGH}} } \

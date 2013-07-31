@@ -1,0 +1,47 @@
+DB::module Text
+DB::text::directory /home/hua.fu/geniustrader/data
+#DB::text::marker "|"
+DB::text::fields::datetime 0
+DB::text::fields::open 1
+DB::text::fields::high 2
+DB::text::fields::low 3
+DB::text::fields::close 4
+DB::text::fields::volume 5
+#DB::text::format 3
+
+# relying on DB::Text defaults for sample database access
+
+Brokers::module SelfTrade
+
+Path::Font::Arial /home/hua.fu/geniustrader/font/msyh.ttf
+Path::Font::Courier /home/hua.fu/geniustrader/font/msyh.ttf
+Path::Font::Times /home/hua.fu/geniustrader/font/msyh.ttf
+
+Analysis::ReferenceTimeFrame year
+
+#Graphic::BackgroundColor black
+#Graphic::ForegroundColor white
+
+Aliases::Global::TFS    SY:TFS 50 10|CS:SY:TFS
+#Aliases::Global::TFS[]  SY:TFS #1 #2|CS:SY:TFS #1|CS:Stop:Fixed 
+#
+
+Path::Aliases::signals      /home/hua.fu/it-manager/stock_tech/conf/user_signals
+Path::Aliases::indicators   /home/hua.fu/it-manager/stock_tech/conf/user_indicators
+
+============== window ================
+
+Brokers::module SelfTrade
+
+Path::Font::Arial D:\stock_tech\conf\font\msyh.ttf
+Path::Font::Courier D:\stock_tech\conf\font\msyh.ttf
+Path::Font::Times D:\stock_tech\conf\font\msyh.ttf
+
+Analysis::ReferenceTimeFrame year
+
+Aliases::Global::TFS    SY:TFS 50 10|CS:SY:TFS
+Aliases::Global::TFS[]  SY:TFS #1 #2|CS:SY:TFS #1|CS:Stop:Fixed #3
+
+DB::module Text
+DB::text::directory D:\stock_tech\stock_history_data
+DB::text::options ( '	' , 0 , '.txt' , ('date' => 5, 'open' => 0, 'high' => 1, 'low' => 2, 'close' => 3, 'volume' => 4, 'Adj. Close*' => 3) )

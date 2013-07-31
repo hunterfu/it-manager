@@ -1,0 +1,33 @@
+# 跌中高 趋势反转 看多
+Signals::Generic::And \
+{Signals::Generic::Or \
+    { Signals::Generic::And \
+        {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}\
+        {S:Generic:Above {I:STO/3 9} 80 }\
+    }\
+    { Signals::Generic::And \
+        {I:Generic:PeriodAgo 1 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+        {I:Generic:PeriodAgo 1 {S:Generic:Above {I:STO/3 9} 80 } }\
+    }\
+    { Signals::Generic::And \
+        {I:Generic:PeriodAgo 2 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+        {I:Generic:PeriodAgo 2 {S:Generic:Above {I:STO/3 9} 80 } }\
+    }\
+    { Signals::Generic::And \
+        {I:Generic:PeriodAgo 3 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+        {I:Generic:PeriodAgo 3 {S:Generic:Above {I:STO/3 9} 80 }} \
+    }\
+    { Signals::Generic::And \
+        {I:Generic:PeriodAgo 4 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+        {I:Generic:PeriodAgo 4 {S:Generic:Above {I:STO/3 9} 80 }} \
+    }\
+}\
+{S:Generic:Repeated { S:Generic:Below {I:MACD/3} {I:Generic:PeriodAgo 1 {I:MACD/3}} } 2 }\
+{S:Generic:Repeated { S:Generic:Below {I:STO/3 9} {I:Generic:PeriodAgo 1 {I:STO/3 9}} } 2 }
+#{S:Generic:Below {I:STO/3 9} 80 }
+#{S:Generic:Repeated { S:Generic:Above {I:SMA 5 {I:Prices VOLUME}} {I:Generic:PeriodAgo 1 {I:SMA 5 {I:Prices VOLUME}}} } 3 }
+#{S:Generic:Above {I:Prices VOLUME} {I:SMA 5 {I:Prices VOLUME}}}\
+#
+#{I:Generic:PeriodAgo 1 {S:Generic:Equal {I:STO/3 9} {I:Generic:MinInPeriod 5 {I:STO/3 9}}}}\
+#{S:Generic:Above {I:MACD/1} {I:MACD/2} }
+#{S:Generic:Below {I:MACD/1} 0 } { S:Generic:Below {I:MACD/2} 0 }

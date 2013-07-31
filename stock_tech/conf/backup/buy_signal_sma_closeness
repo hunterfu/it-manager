@@ -1,0 +1,7 @@
+# sma closses
+Signals::Generic::And \
+{ S:Generic:Above {I:SMA 30}  {I:Generic:Eval 0.98*{I:Generic:PeriodAgo 30 {I:SMA 30}}}  }\
+{ S:Generic:Below {I:SMA 30}  {I:Generic:Eval 1.02*{I:Generic:PeriodAgo 30 {I:SMA 30}}}  }\
+{ S:Generic:Above {I:SMA 60}  {I:Generic:Eval 0.98*{I:Generic:PeriodAgo 30 {I:SMA 60}}}  }\
+{ S:Generic:Below {I:SMA 60}  {I:Generic:Eval 1.02*{I:Generic:PeriodAgo 30 {I:SMA 60}}}  }\
+{ S:Generic:Above {I:Prices CLOSE} {I:SMA 30} }

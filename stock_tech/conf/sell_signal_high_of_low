@@ -1,0 +1,14 @@
+# 高中低 趋势反转 看空
+Signals::Generic::Or \
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Prices HIGH}  {I:Generic:MaxInPeriod 20 {I:Prices HIGH}}}\
+        { S:Generic:Equal {I:Prices CLOSE} {I:Prices LOW}}\
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Prices HIGH}}  {I:Generic:MaxInPeriod 20 {I:Prices HIGH}}}\
+        { S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Prices LOW}}} \
+    }\
+    { Signals::Generic::And \
+        { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 2 {I:Prices HIGH}}}  {I:Generic:MaxInPeriod 20 {I:Prices HIGH}}}\
+        { S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 2 {I:Prices LOW}}}} \
+    }

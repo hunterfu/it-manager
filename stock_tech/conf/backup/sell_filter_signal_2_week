@@ -1,0 +1,22 @@
+# week线过滤信号
+Signals::Generic::And \
+{ Signals::Generic::Or \
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 1 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 1 {S:Generic:Above {I:STO/3 9} 50 } }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 2 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 2 {S:Generic:Above {I:STO/3 9} 50 } }\
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 3 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 3 {S:Generic:Above {I:STO/3 9} 50 }} \
+  }\
+  { Signals::Generic::And \
+      {I:Generic:PeriodAgo 4 {S:Generic:CrossOverDown {I:STO/3 9} {I:STO/4 9}}}\
+      {I:Generic:PeriodAgo 4 {S:Generic:Above {I:STO/3 9} 50 }} \
+  }\
+}\
+{ S:Generic:Above {I:Prices CLOSE} 80 } 
+#{ S:Generic:Below {I:OBV} {I:Generic:PeriodAgo 1 {I:OBV}} }

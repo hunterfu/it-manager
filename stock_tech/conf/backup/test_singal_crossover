@@ -1,0 +1,3 @@
+S:Generic:And \
+{I:Generic:PeriodAgo 1 {S:Generic:Repeated { S:Generic:Below  {I:SMA 30} {I:SMA 60}} 20 }}\
+{S:Generic:CrossOverUp {I:SMA 30} { I:SMA 60}}
