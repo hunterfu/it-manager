@@ -1,0 +1,20 @@
+关于linux fstab 中 设备 LABEL的 解释 
+
+ 其实很早就注意到了linux下的/etc/fstab的第一个域已由块设备(/dev/sda1等)变成了LABEL(LABEL=/boot等)，今天终于去查了一下LABEL是怎么用的了，如果你还不明白，可参考下面。
+在man 5 fstab里说明了使用卷标将使系统更加健壮：增加或删除一个scsi 磁盘只需要改变这个磁盘名而不是文件系统的卷标.我怕我翻译的不准确，特附上原话：This will make the system more robust: adding or removing a  SCSI  disk changes the disk device name but not the filesystem volume label.
+e2label是用来修改或显示ext2/ext3文件系统的label,但lable name(即下面的/disk3，而非LABEL=/disk3)不能超过16个字符，超过会自动被truncate。.卷标名也可以在tune2fs和mkfs.ext2工具中设置.
+
+如果你想在fstab里使用卷标，可以这样做
+例如：
+1、显示/dev/sdb1块设备的label名：
+#e2label /dev/sdb1
+/mm
+2、设置/dev/sdb1块设备的label名为/disk3
+#e2label /dev/sdb1 /disk3
+#e2label /dev/sdb1
+/disk3
+3、添加进/etc/fstab里
+设置lable后，可用这种方式：
+LABEL=/disk3                    /disk3(加载点可自由定义)                  ext3    defaults        0 0
+(如不用label可写作:/dev/sdb1  /disk3   ext3    defaults   0 0 )
+

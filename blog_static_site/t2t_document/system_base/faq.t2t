@@ -1,0 +1,147 @@
+linux下常见错误及解决方法
+linux,error,django,mod_wsgi,apache,fails sanity,MySQL server gone away, UnicodeEncodeError,sqlite OperationalError,decode
+5799ce00-28cd-46a1-b44f-ea0df14bed6f
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%%TOC
+
+
+在日常系统管理工作中，需要安装软件，通常的方法都是要通过下载源码包，然后进行编译安装，@@
+但是在编译过程中，经常会碰到这样那样的错误，特此总结一下，希望对大家有用
+
+
+= configure: error: C++ preprocessor “/lib/cpp” fails sanity 错误解决 =
+
+在编译某些软件的时候，运行./configure 会报错，错误提示为：
+```
+configure: error: C++ preprocessor “/lib/cpp” fails sanity
+check See `config.log’ for more details
+```
+
+**解决办法**：出现该情况是由于c++编译器的相关package没有安装，以root用户登陆，在终端上执行：
+```
+# yum install glibc-headers
+# yum install gcc-c++ 
+```
+重新编译，问题解决!
+
+
+= (2006, 'MySQL server has gone away') 错误解决 =
+
+在使用 apache + mod_wsgi + django + MySQLdb 部署项目的时候，执行某些页面会提示如下类似错误
+```
+OperationalError at /ajax_test_func
+(2006, 'MySQL server has gone away')
+Request Method: 	GET
+Request URL: 	http://192.168.0.1/ajax_permgroup_func?page=1&rows=20
+Django Version: 	1.2.3
+Exception Type: 	OperationalError
+Exception Value: (2006, 'MySQL server has gone away')
+其他省略.....
+```
+- **解决办法1**: 原因是由于长时间的执行批量的MYSQL语句造成,修改**/etc/my.cnf**@@
+在**[mysqld]**段落加入**wait_timeout=90000** 示例文件内容如下:
+```
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+# Default to using old password format for compatibility with mysql 3.x
+# clients (those using the mysqlclient10 compatibility package).
+old_passwords=1
+# 修正 OperationalError: (2006, 'MySQL server has gone away') 错误
+wait_timeout=90000
+    
+其他省略.......
+```
+然后 重启mysql服务，再次访问问题页面，没有再出现如上问题，问题得到暂时解决
+
+- **解决办法2**: 修改数据库连接代码 使用mysql ping来检查连接,实现超时自动重新连接
+
+```
+#/usr/bin/env python
+# -*- coding: utf-8 -*-
+import MySQLdb
+con=MySQLdb.Connect( host="foobar.com",
+                     port=3306,
+                     user="loginname",
+                     passwd="loginpassword",
+                     db="foobar")
+con.ping(True)
+cur=con.cursor()
+```
+
+推荐使用第2种解决方法，从代码彻底解决!
+
+
+= django UnicodeEncodeError 错误解决 =
+
+在使用 apache + mod_wsgi + django + redhat 5.3 部署项目的时候，一些页面提交中文数据会出现如下错误
+```
+UnicodeEncodeError at /ajax_test_func
+
+'ascii' codec can't encode characters in position 0-3: ordinal not in range(128)
+
+Request Method: 	GET
+Request URL: 	http://192.168.0.1/ajax_test_func?action_type=add_resource&app_id=27&description=中文&resource_name=usergroup
+Django Version: 	1.2.3
+Exception Type: 	UnicodeEncodeError
+Exception Value: 	'ascii' codec can't encode characters in position 0-3: ordinal not in range(128)
+其他省略.....
+```
+**解决办法**: apache的默认设置是**LANG=C**，不是utf-8编码,这时上传非ascii码的文件名或者表单提交的内容是非ascii编码(国际化)，会触发**UnicodeEncodeError**异常
+
+通过设置Aapache的启动环境变量来修正此问题,redhat系发行版在**/etc/sysconfig/httpd**设置,其他发行版可能在**/etc/apache2/envvars**中设置 @@
+在**/etc/sysconfig/httpd**配置文件中添加如下内容:
+```
+HTTPD_LANG='en_US.UTF-8'
+export LC_ALL='en_US.UTF-8'
+```
+重起apache,再次访问测试，问题解决
+
+
+= python sqlite3 OperationalError: "Could not decode to UTF-8 column 错误解决 =
+
+在使用python sqlite 库的时候，如果出现上述出错误,可以在程序中使用 如下设置
+```
+conn = sqlite.connect("/tmp/db_file")
+conn.text_factory = str
+```
+conn 是 connection object, 详细请看 http://docs.python.org/lib/sqlite3-Connection-Objects.html
+
+
+= 'ascii' codec can't decode byte 0xe4 in position 0: ordinal not in range(128) 错误解决 =
+
+在python 程序中，有时候碰到中文，就会出现如上错误，用 **print** 输出是没有问题的，但是程序中直接应用会出错!!!@@
+
+**解决方法**: 可以通过**unicode**函数,将字符窜以指定编码方式编码，python源文件例子如下:
+```
+# -*- coding: utf-8 -*-
+s = "中文阿"
+b = unicode(s, "utf-8")
+print b
+```
+
+**注意**: python中的**print**直接把字符串传递给操作系统，所以你需要把str解码成与操作系统一致的格式,这样输出才不会乱码
+
+
+= mysql导入数据库的错误：MySQL server has gone away 解决 =
+
+出现如上错误的原因是:导出mysql数据的时候，往往会把一张数据表中的数据导为一个很大的insert语句，造成导回mysql的时候报错
+
+**解决方法** : 修改 /etc/my.cnf 加入 **max_allowed_packet=10M**
+```
+cat /etc/my.cnf
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+max_allowed_packet=5M 
+```
+重启mysql,重新导入成功

@@ -1,0 +1,111 @@
+使用Makefile方式 自动编译LFS系统
+makefile,make,lfs,alfs,gcc3,gcc4
+110a97c0-d9b7-42e6-a1a5-661b09e8a937
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(html): @@ <BR>
+%%TOC
+
+
+LFS (Linux From Scratch) 文档给读者提供了设计并建构自定义的Linux系统的背景知识和过程指导.@@
+用户参照LFS文档进行按部就班编译，如果此过程已经很熟悉了，就可以采用自动方式编译LFS系统.@@
+本文介绍的就是通过Makefile方式，实现lfs系统的自动编译。(早期作的，所以软件包都比较旧，只为学习交流用哈)@@
+
+= 程序下载 =
+
+ - 程序下载地址 [51know.build-1.0.tgz 51know.build-1.0.tgz]
+ - 程序解压 
+```
+tar -xzvf 51know.build-1.0.tgz
+```
+
+
+= 程序目录结构说明 =
+```
+[root@hunterfu ~]# tree  build -L 1
+build
+├── build
+├── chrootbuild
+├── download_package
+├── downloadverify
+├── env.conf
+├── excludefile
+├── find_dep
+├── functions
+├── group_package
+├── makemail
+├── prechrootenv
+├── RuleFile
+├── securetree
+├── smtpsend
+├── striptree
+└── untar
+```
+- 目录介绍:
+ - **RuleFile :** 就是放软件包的Makefile文件的,定义了软件包何处下载，如何编译，以及打包目录等
+ - **download_package :** 此目录存放下载的软件包，方便期间,已经将软件包附带了
+
+- 脚本介绍:
+ - **build :** 主程序，执行此程序，选择编译功能即可
+ - **chrootbuild :** 工具链编译完成后，在chroot环境下进行编译软件包
+ - **functions :** shell的公共函数(发邮件函数也在这里，编译出错可以自动发邮件通知）
+
+
+= 程序使用 =
+
+- 程序编译环境 
+
+由于此环境是早期作的，所以软件包都比较老，只能用**GCC3**来编译，使用**GCC4**编译有问题，如果你解决了，请告知我，我也学习下哈@@
+本人在 Rhel4 或者 Centos4 系统编译测试通过 
+  
+- 到程序目录中，执行 **build** 主程序
+```
+[root@hunterfu build]# sh build 
+
+========================================================================
+ Build linux From Source                        version : 1.0
+                                                author  : HunterFu   
+========================================================================
+build_tool               : Build ToolChains target
+build_core               : Build System Package
+build_livecd             : Build Livecd Isos
+build_all                : Build all target (toolchain and system package)
+=========================================================================
+example                  : build build_tool
+```
+- 功能说明:
+ - **sh build build_tool :** 编译工具链
+ - **sh build build_core :** chroot环境下，编译系统软件包
+ - **sh build build_livecd :** chroot环境下,将编译好的系统软件包打包成livecd
+ - **sh build build_all :** 完成上述所有编译过程，直接作成livecd iso
+
+
+= 编译好的iso =
+
+- 这里我提供一个编译好的iso(livecd)下载 [51know.lfs.iso 51know.lfs.iso] , **root用户免密码登录**
+- 以下是livecd在VirtualBox中运行效果图(注意:init script 是从redhat系统中拷贝过来的，可能会错误，但不影响启动)
+ - 引导界面(可以输入 **linux DEBUG** 进入调试模式 initrd 切换根之前)
+ 
+[boot_one.png]
+
+ - 运行界面1
+ 
+[boot_two.png]
+ - 运行界面2
+ 
+[boot_three.png]
+
+
+= 总结(summary) =
+
+通过lfs你可以了解linux系统的运行原理已经工作方式，使用Makefile的依赖关系可以实现自动化编译lfs,都是不错的学习方法！@@
+如果你使用如上程序有任何问题，欢迎留言，互相学习交流！
+

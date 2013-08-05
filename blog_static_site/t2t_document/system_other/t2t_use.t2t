@@ -1,0 +1,416 @@
+Txt2tags 使用指南
+txt2tags,文档编写工具,html,wiki
+69e0ab1e-ec45-46df-b258-5425d57e9727
+
+
+%!Target  : html
+%!Encoding: utf-8
+%! Style  :	main.css 
+%! Style  :	handheld.css
+%! Style  :	commonPrint.css
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%%TOC
+= 第一章  txt2tags 介绍 =
+
+== t2tags 作用？ ==
+
+Txt2tags 是一个文本格式化和转换工具，写文档时可以专注于内容不怎么去折腾格式，跨平台。
+Txt2tags 用很少的标记就能把纯文本文件转换成其支持的各种类型的目标文档。
+正如作者所说 ： __**ONE source, MULTI targets**__  重在内容，形式次之
+
+== 支持的文本格式  == 
+
+txt2tags支持的文本格式列表如下 具体参考官方站 **[QuickRefernce http://txt2tags.sourceforge.net/txt2tags-quickref.pdf]**
+
+- 头部 (文档标题，作者名，日期)
+- 章节标题(是/否 编号)
+- 段落
+- 字体美化
+  - 粗体
+  - 斜体
+  - 下划线
+- 等宽字体(完全引用)
+  - 等宽段落
+  - 等宽文本行
+  - 等宽文本域(多行)
+- 引用域
+- 链接
+  - URL/Internet链接
+  - e-mail地址链接
+  - 本地链接
+  - 锚点链接
+- 列表
+  - 圆点式列表
+  - 编号型列表
+  - 定义式列表
+- 水平分隔线
+- 图象(可以调位置)
+- 表格(有无边框，放左边放中间，放几列)
+- 有标记支持保留纯文本格式
+- 得到当前时间的宏
+- 注释
+
+
+== 最新版本支持的目标文件类型(2.5 version) ==
+
+- HTML
+- XHTML
+- SGML
+- LaTeX
+- Lout
+- Man page
+- Wikipedia (NEW)
+- Google Code Wiki (NEW)
+- DokuWiki (NEW)
+- MoinMoin
+- MagicPoint
+- PageMaker
+- Plain text
+ 
+
+== 支持三种用户界面 ==
+
+支持三种界面：web页界面，图形界面，命令行界面。
+命令行举例如下(假设源文件是``file.t2t``)：
+
+| **转成html**             | ``$ txt2tags -t html file.t2t``
+| **生成目录** | ``$ txt2tags -t html --toc file.t2t``
+| **标题编号**  | ``$ txt2tags -t html --toc --enum-title file.t2t``
+| **从标准输入中读入**       | ``$ echo -e "\n**bold**" | txt2tags -t html --no-headers -``
+
+------------------------------------------------------------------------
+
+= 第二章  下载安装 =
+
+== 安装参考和编辑器推荐 ==
+linux版本    安装请参考 [txt2tags http://txt2tags.sourceforge.net/index.html]
+
+Windows版本 安装请参考 [txt2tags http://txt2tags-win.sf.net]
+
+已有语法高亮文件的编辑器：
+  - Vim (www.vim.org)
+  - Emacs (www.emacs.org)
+  - Nano (www.nano-editor.org)
+  - Kate (http://kate.kde.org)
+
+
+== [g]vim的 语法高亮设置  ==
+
+txt2tags 官方站 下载vim 的语法文件 [txt2tags.vim http://txt2tags.sourceforge.net/tools/txt2tags.vim]
+   将此语法文件放到 vim的语法目录中 /usr/share/vim/vim71/syntax/txt2tags.vim 
+
+修改 vim 的 /usr/share/vim/vim71/filetype.vim  使之自动关联.t2t 扩展名 文件  
+```
+" Z-Shell script
+au BufNewFile,BufRead .zprofile,/etc/zprofile,.zfbfmarks  setf zsh
+au BufNewFile,BufRead .zsh*,.zlog*,.zcompdump*  call s:StarSetf('zsh')
+```
+后面加上两行： 
+```
+" txt2tags file
+au BufNewFile,BufRead *.t2t                     setf txt2tags
+```
+windows下的gvim 设置类似,请参考如上设置
+
+------------------------------------------------------------------------
+
+= 第三章  掌握 Txt2tags 基本结构=
+
+== 文件基本结构介绍 ==
+
+源文件按顺序分成三部分：
+ |  **头部域**  | 源文件头三行，或首行置空代表无头部信息。主要是该文件标题、作者、版本、时间等信息。
+ |  **设置域**  | 头部域结束，设置域就开始(第四或第二行)，一直到主体域开始的地方才结束。一些转换时的选项设置(和命令行指定参数一样)。
+ |  **主体域**  | 从头部域后首个可用的文本行(不是注释或设置行)开始。放的是该文件的具体内容。
+
+完整的例子 
+
+```
+My nice doc Title
+Mr. John Doe
+Last Updated: %%mtime(%c)
+
+%! Target  : html
+%! Style   : fancy.css
+%! Encoding: iso-8859-1
+%! Options : --toc --enum-title
+
+Hi! This is my test document.
+Its content will end here.
+```
+
+
+== 头部域 ==
+
+如果首行为空就是没有头部信息了。不然的话，头三行一般是这么放的啦：
+   - //第一行//: 文档标题
+   - //第二行//: 作者名 和/或 电子邮件
+   - //第三行//: 文档日期 和/或 版本(经常放``%%date``)
+
+
+而且源文件这头三行会转换成目标文档的头三行(一一对应)，而且字体会搞大一点、粗一点让你看。
+写了头一行以后，后面两行也可以放空不写，头部域在第三行正常结束。
+
+
+
+== 设置域 ==
+
+位置：
+- 在头部域之后开始
+  - 如果有指定头部信息，就在 **第四行** 开始
+  - 如果没有指定头部信息，就在 **第二行** 开始
+- 在主体域开始时结束
+  - 出现一个非设置，非空，非注释行就结束
+
+
+设置域是可选的，在文档中写了设置行后，命令行转换的时候就不用加一堆参数了。比如可以设置默认的目标文档类型和编码。
+
+设置域中语法格式如下：
+
+``` 
+%! 关键字 : 取值
+```
+可用关键字列表：
+
+ || 关键字   | 描述 |
+ |   Target   | 设置默认目标文档类型。
+ |  Options   | 设置转换时的默认选项，格式同命令行选项。
+ |   Style    | 指定文档样式。用于为HTML/XHTML指定CSS文件，或在LaTex中载入包。
+ |  Encoding  | 设置文档字符集。
+ |   PreProc  | 输入过滤器。对源文档进行“查找和替换”。
+ |  PostProc  | 输出过滤器。对目标文档进行“查找和替换”。
+
+例子：
+
+```
+%! Target  : html
+%! Options : --toc --toc-level 3
+%! Style   : fancy.css
+%! Encoding: iso-8859-1
+%! PreProc : "AMJ"        "Aurelio Marinho Jargas"
+%! PostProc: '<BODY.*?>'  '<BODY bgcolor="yellow">'
+```
+== 主体域 ==
+
+在首个可用的文本行处开始，直到文件结束。
+使用命令行选项``--no-headers``可以只转换文档主体，忽略头部信息。此时你可以在别的文件设置头部信息，等主体转换完毕再加进来。
+
+------------------------------------------------------------------------
+
+= 第四章 - 常用命令和宏介绍 =
+
+== %!include命令 ==
+
+``include``命令可以把外部文件内容加到源文件的主体中。这个不是一个配置项，而是一个命令，在文档主体域内有效。
+
+用``include``命令可以把一个大文件的内容分解成好几个小文件单独存放，例子：
+
+```
+My first book
+Dr. John Doe
+1st Edition
+
+%!include: intro.t2t
+%!include: chapter1.t2t
+%!include: chapter2.t2t
+...
+%!include: chapter9.t2t
+%!include: ending.t2t
+```
+
+只需在``%!include``之后指定文件名。
+
+也可以顺便指定目标文档类型：
+```
+%!include(html): file.t2t
+```
+注意只是读入该文档的主体域，而忽略其头部域和设置域。
+
+总共有三种不同的方法可以读入文件：
+- Verbatim include
+- Raw include
+- Tagged include
+
+
+**Verbatim**型include保留文本中原始的空格和格式，效果与完全引用域相同，格式如下：
+```  
+%!include: ``/etc/fstab`` 
+```
+
+**Raw**型include不解析文本中的标记，效果与纯文本域相同，格式如下：
+```  
+%!include: ""nice_text.txt"" 
+```
+
+**Tagged**型include把文本内容直接加到转换后的文档中，可以用来添加头部或尾部信息，或txt2tags不能生成的一些标签，格式如下：
+```  
+%!include(html): ''footer.html'' 
+```
+
+== %!PreProc ==
+
+PreProc在源文档被解析之前，对其按行进行“查找和替换”。
+
+可以用来定义一些常用词的缩写，比如：
+
+```
+%!preproc JJS          "John J. Smith"
+%!preproc RELEASE_DATE "2003-05-01"
+%!preproc BULLET       "[images/tiny/bullet_blue.png]"
+```
+
+源文档中的一行：
+``` 
+Hi, I'm JJS. Today is RELEASE_DATE. 
+```
+
+txt2tags转换时，将此行视为：
+``` 
+Hi, I'm John J. Smith. Today is 2003-05-01. 
+```
+
+相当于对源文档调用外部Sed/Perl进行过滤，然后传给txt2tags：
+``` 
+$ cat file.t2t | preproc-script.sh | txt2tags - 
+```
+
+txt2tags在PreProc替换结束后开始解析。
+
+== %!PostProc ==
+
+PostProc对转换后生成的文档按行进行“查找和替换”。
+
+可以用于对转换生成文档做进一步加工。
+例子：
+```
+%!postproc(html): '<BODY.*?>' '<BODY BGCOLOR="green">'
+%!postproc(tex) : "\\newpage" ""
+```
+
+相当于对转换后的内容调用外部Sed/Perl进行过滤，再生成目标文档：
+``` 
+$ txt2tags -t html -o- file.t2t | postproc-script.sh > file.html 
+```
+
+== 宏基本介绍 ==
+
+宏用于插入当前日期等动态信息，在转换时被动态替换
+一个宏以``%%``标识，然后是宏名，如``%%date``。一些宏格式是可定制的，格式串放在宏名之后，以``%``标识，如``%%date(%Y-%m-%d)``。
+未定制时自动采用默认格式。
+
+  || 宏名   | 展开为...                        | 默认格式 |
+  | ""%%date""    | 当前时间 |  %Y%m%d 
+  | ""%%mtime""   | 源文件更新时间    |  %Y%m%d 
+  | ""%%infile""  | 源文件路径                 |    %f 
+  | ""%%outfile"" | 输出文件路径                 |    %f 
+  | ""%%toc""     | 文档目录 |    - 
+
+规则：
+
+- 宏名不区分大小写：``%%date``、``%%DaTe``和``%%DATE``等价
+- 宏在文档头部域和主体域有效，但%%toc只在主体域有效
+- 宏可以放在行中任一位置，但%%toc只能单放一行
+- 宏(除了%%toc)可以在链接和图片标记中使用
+- 在标题、完全引用、纯文本环境下宏不会被展开
+
+
+例子(粗体部分是展开的宏):
+
+This is the Txt2tags User Guide, converted to **%%outfile(%e)**
+by txt2tags from the **%%infile** source file. The conversion
+was done at **%%date(%Y-%m-%d %X)**, but the last change on the
+source document was made on **%%mtime(%Y-%m-%d %X)**. Both
+source and converted file reside on the **%%infile(%D)**
+directory.
+
+
+=== %%date ===
+
+``%%date``宏展开当前日期和时间，可用于得到源文档最后更新时间，参见[""%%mtime"" macro #macro-mtime]。
+
+该宏支持的格式列表可以在[Python站点 http://www.python.org/doc/current/lib/module-time.html]找到。
+
+下面列一些常用的：
+
+ || 指令 | 描述 |
+  |  %a  | 本地简写的星期名
+  |  %A  | 本地完整的星期名
+  |  %b  | 本地简写的月份名
+  |  %B  | 本地完整的月份名
+  |  %c  | 本地对应的日期和时间表示
+  |  %d  | 一个月中的第几天[01,31]
+  |  %H  | 24小时制的小时数[00,23]
+  |  %I  | 12小时制的小时数[01,12]
+  |  %m  | 一年中的第几个月[01,12]
+  |  %M  | 分钟数[00,59]
+  |  %p  | 本地的AM或PM时间
+  |  %S  | 秒钟数[00,61].  (1)
+  |  %x  | 本地日期简写
+  |  %X  | 本地时间简写
+  |  %y  | 两位数的年份表示[00,99]
+  |  %Y  | 四位数的年份表示
+  |  %%  | "%"字符
+
+例子:
+
+ || 宏                          |  -->  | 展开效果 %%date(%Y-%m-%d %H:%M) |
+  | ""%%date(Converted on: %c)""    |  -->  | %%date(Converted on: %c)
+  | ""%%date(%Y-%m-%d)""            |  -->  | %%date(%Y-%m-%d)
+  | ""%%date(%I:%M %p)""            |  -->  | %%date(%I:%M %p)
+  | ""%%date(Today is %A, on %B.)"" |  -->  | %%date(Today is %A, on %B.)
+
+
+
+=== %%mtime ===
+
+``%%mtime``宏展开为源文档最后更新时间，其格式指令与[""%%date"" macro #macro-date]相同。
+
+比如，源文档最近的更新是在**%%mtime(%c)**，这个时间是用``%%mtime(%c)``展开得到的。
+
+
+
+=== %%toc ===
+
+``%%toc``宏替换为文档的大纲目录，一般放到主体域开头。
+
+该宏没有格式字串，使用规则如下：
+
+- 只在文档主体域中可用
+- 必须单写一行(前后可以有空格)
+- 必须与命令行选项--toc配合使用，不然它会被忽略
+- 如果找到%%toc就不使用预设的TOC位置/格式
+
+
+
+== 关于 PreProc和PostProc 几点说明 ==
+
+- 按行进行“查找和替换”，类似SED。
+- 可以针对不同目标类型做过滤，比如：
+```
+%!postproc      :   this   that
+%!postproc(html):   that   other
+```
+- 解释换行符 ``\n`` 和制表符 ``\t``。
+- 删一些字串： 
+``` 
+%!postproc: "undesired string" "" 
+```
+- 用PostProc换标签的时候，最好总是指明对应的目标文档类型：
+``` 
+%!PostProc(target): <this> <that> 
+```
+- PreProc和PostProc起作用的位置：
+``` 
+$ cat file.t2t | preproc.sh | txt2tags | postproc.sh 
+```
+- 反向转义字符：
+```
+ \*  \+  \.  \^  \$  \?  \(  \)  \{  \[  \|  \\ 
+```
+- 支持Python的正则表达式，例子：把标签"B"都换成标签"STRONG"：
+```
+ %!postproc(html):   '( < / ? ) B>'   '\1STRONG>'
+``` 
+- 参数固定为2个，有空格时可以加单引号或双引号。 
+

@@ -1,0 +1,37 @@
+让linux 的 history 显示命令执行时间
+
+nux 上使用默认 history 结果如下：
+
+    492 vi /root/drac/drac_login.sh
+    493 ls
+    494 rm /mnt/drac/
+    495 rm /mnt/drac/ -rf
+    496 ls
+    497 clar
+    498 poweroff
+    499 exit 0
+    500 exit 2
+    501 vi /etc/bash/bashrc
+    502 vi /etc/bash/bashrc
+    503 history 
+
+你更本不可能看到某个命令在什么时候执行，但是你加入下面两行后结果就完成不一样了
+在 /etc/bashrc 或 /etc/profile　中加入　下面两句就可以了
+
+    HISTTIMEFORMAT=”%F %T”
+    export HISTTIMEFORMAT
+
+现在我们看到的结果就完全不一样了，看到粗体部分的时间没有？ ^_^
+
+    545 2008-12-30 15:55:21expr 15 %2
+    546 2008-12-30 15:55:23expr 15 % 2
+    547 2008-12-30 16:04:11man grep
+    548 2008-12-30 16:17:16man test
+    549 2008-12-30 18:32:32history
+    550 2008-12-30 18:38:00history 
+
+但是我们使用 vi 看 /root/.bash_history ，看到的时间以是从1970年1月1日到命令执行时相差秒数，不是我们想要的结果，当然也可以使用perl去读.bash_history文件
+
+    perl -pe ’s/(/d+)/localtime($1)/e’ .bash_history
+
+

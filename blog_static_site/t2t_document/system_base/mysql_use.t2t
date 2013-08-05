@@ -1,0 +1,109 @@
+mysql 常用命令用法总结
+mysql,mysqldump,alter table,用法总结
+c928e6fa-99c8-4878-8ad3-d118e3c5f7d7
+
+
+%!Target  : html
+%!Encoding: utf-8
+%! Style  :	main.css 
+%! Style  :	handheld.css
+%! Style  :	commonPrint.css
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%%TOC
+在日常工作中，会简单的使用一下mysql,故对常见命令操作总结一下，常用方式如下
+
+= mysqldump 命令的使用 =
+
+- 备份和导出数据库
+```
+mysqldump -h database_ip -u Username -p --opt databasename > backup-file.sql
+```
+- 只导出数据库表结构
+```
+mysqldump -h database_ip -d -u Username -p databasename >database_structure.sql
+```
+- 只导出数据库中的某个表
+```
+mysqldump --opt --add-drop-table -u Username -p  databasename tablename > dump.sql
+```
+- 如果不想手工输入密码 请使用--password 参数
+```
+mysqldump -h database_ip -u Username --password=123456 --opt databasename > backup-file.sql
+mysqldump -h database_ip -d -u Username --password=123456 databasename >database_structure.sql
+```
+- 修改root用户密码
+```
+mysqladmin -u root password "123456"
+```
+
+
+= mysql 命令使用 =
+    
+
+- 将查询结果保存到文件
+```
+select title from book into outfile '/tmp/outfile.txt';
+```
+- 查找表中多余的重复记录，重复记录是根据某个字段（peopleId）来判断
+```
+select * from people where peopleId in (select  peopleId  from  people  group  by  
+peopleId  having  count(peopleId) > 1);
+```
+- 查询表中不重复记录(排除重复记录)
+```
+select * from phome_ecms_wma where title in (select distinct title from phome_ecms_wma);
+```
+- 删除表中重复记录,重复记录是根据某个字段（title）来判断
+```
+select *,count(distinct title) INTO OUTFILE '/tmp/table.bak' from phome_ecms_wma group by title;
+delete from phome_ecms_wma;
+LOAD DATA INFILE '/tmp/table.bak' REPLACE INTO TABLE phome_ecms_wma  character set utf8;
+```
+- 随机选取记录
+```
+SELECT *FROM url  ORDER BY RAND() LIMIT 5;
+```
+- 查询数据库当前编码
+```
+mysql> show variables like "character_set%";
+```
+- 修改表字段类型
+```
+mysql> alter table  table_name change last_action last_action datetime NOT NULL default '0000-00-00 00:00:00';
+```
+- 给表添加一个新字段
+```
+mysql> ALTER TABLE host ADD ks_mac VARCHAR(100);
+```
+- 从表中删除一个字段
+```
+mysql> ALTER TABLE table_name DROP field_name; 
+```
+- 重命名表
+```
+mysql>alter table t1 rename t2;
+```
+- 给字段加索引
+```
+mysql> alter table tablename add index 索引名 (字段名1[，字段名2 …]);
+mysql> alter table tablename add index emp_name (name);
+```
+- 加主关键字的索引
+```
+mysql> alter table tablename add primary key(id);
+```
+- 加唯一限制条件的索引
+```
+mysql> alter table tablename add unique emp_name2(cardnumber);
+```
+- 删除某个索引
+```
+mysql>alter table tablename drop index emp_name;
+```
+- 远程访问mysql 设置
+```
+mysql> GRANT ALL PRIVILEGES ON database_test.* to root@192.168.1.9  IDENTIFIED BY '123456';
+mysql> FLUSH PRIVILEGES;
+```
+

@@ -1,0 +1,211 @@
+RHEL5(x86-64) 系统上Subversion安装使用详解
+subversion,linux,rhel5,版本控制,websvn
+c07632c0-610c-43a9-85bd-d9ced190b4cc
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%%TOC
+
+= Subversion 是什么 =
+
+	Subversion是一个自由/开源的版本控制系统。也就是说，在Subversion管理下，文件和目录可以超越时空。也就是Subversion允许你数据恢复到早期版本，或者是检查数据修改的历史。正因为如此，许多人将版本控制系统当作一种神奇的“时间机器”。
+
+	Subversion 的版本库可以通过网络访问，从而使用户可以在不同的电脑上进行操作。从某种程度上来说，允许用户在各自的空间里修改和管理同一组数据可以促进团队协作。因为修改不再是单线进行，开发速度会更快。此外，由于所有的工作都已版本化，也就不必担心由于错误的更改而影响软件质量—如果出现不正确的更改，只要撤销那一次更改操作即可。
+
+	某些版本控制系统本身也是软件配置管理（SCM）系统，这种系统经过精巧的设计，专门用来管理源代码树，并且具备许多与软件开发有关的特性—比如，对编程语言的支持，或者提供程序构建工具。不过Subversion并不是这样的系统。它是一个通用系统，可以管理任何类型的文件集。对你来说，这些文件这可能是源程序—而对别人，则可能是一个货物清单或者是数字电影。
+  
+  
+= Subversion的特性 =
+
+在讲解Subversion为版本控制领域带来的特性时，我们会经常通过Subversion对CVS的改进进行说明。如果不熟悉CVS，了解所有Subversion的特性会有一定的困难。而如果根本就不熟悉版本控制，你就只有干瞪眼的份儿了。因此，最好首先阅读一下第 1 章 基本概念，这一章简单介绍了一些版本控制的基本思想和概念。
+
+Subversion支持：
+
+- 版本化的目录
+	CVS只能跟踪单个文件的变更历史，但是Subversion实现的“虚拟”版本化文件系统则可以跟踪目录树的变更。在Subversion中，文件和目录都是版本化的。
+
+- 真实的版本历史
+	由于只能跟踪单个文件的变更，CVS无法支持如文件拷贝和改名这些常见的操作—这些操作改变了目录的内容。同样，在CVS中，一个目录下的文件只要名字相同即拥有相同的历史，即使这些同名文件在历史上毫无关系。而在Subversion中，可以对文件或目录进行增加、拷贝和改名操作，也解决了同名而无关的文件之间的历史联系问题。
+
+- 原子提交
+	一系列相关的更改，要么全部提交到版本库，要么一个也不提交。这样用户就可以将相关的更改组成一个逻辑整体，防止出现只有部分修改提交到版本库的情况。
+
+- 版本化的元数据
+
+	每一个文件和目录都有自己的一组属性—键和它们的值。可以根据需要建立并存储任何键/值对。和文件本身的内容一样，属性也在版本控制之下。
+- 可选的网络层
+	Subversion 在版本库访问的实现上具有较高的抽象程度，利于人们实现新的网络访问机制。Subversion可以作为一个扩展模块嵌入到Apache之中。这种方式在稳定性和交互性方面有很大的优势，可以直接使用服务器的成熟技术—认证、授权和传输压缩等。此外，Subversion自身也实现了一个轻型的，可独立运行的服务器软件。这个服务器使用了一个自定义协议，可以轻松的用SSH封装。
+
+- 一致的数据操作
+	Subversion用一个二进制差异算法描述文件的变化，对于文本（可读）和二进制（不可读）文件其操作方式是一致的。这两种类型的文件压缩存储在版本库中，而差异信息则在网络上双向传递。
+
+- 高效的分支和标签操作
+	在Subversion中，分支与标签操作的开销与工程的大小无关。Subversion的分支和标签操作用只是一种类似于硬链接的机制拷贝整个工程。因而这些操作通常只会花费很少且相对固定的时间。
+
+
+= Subversion的架构 =
+
+[subversion_arch.png]
+	上图 Subversion设计总体上的“俯视图”,图中的一端是保存所有版本数据的Subversion版本库，另一端是Subvesion的客户程序，管理着所有版本数据的本地影射（称为“工作拷贝”），在这两极之间是各种各样的版本库访问（RA）层，某些使用电脑网络通过网络服务器访问版本库，某些则绕过网络服务器直接访问版本库。
+
+= Subversion的组件 =
+
+- svn
+	命令行客户端程序。
+
+- svnversion
+	此工具用来显示工作拷贝的状态（用术语来说，就是当前项目的修订版本）。
+	
+- svnlook
+	直接查看Subversion版本库的工具。
+	
+- svnadmin
+	建立、调整和修复Subversion版本库的工具。
+
+- svndumpfilter
+	过滤Subversion版本库转储数据流的工具。
+
+- mod_dav_svn
+	Apache HTTP服务器的一个插件，使版本库可以通过网络访问。\
+	
+- svnserve
+	一个单独运行的服务器程序，可以作为守护进程或由SSH调用。这是另一种使版本库可以通过网络访问的方式。
+
+- svnsync
+	一个通过网络增量镜像版本库的程序。
+   
+
+
+= Subversion 的安装 =
+
+- 使用 yum 来安装 apche subverion 
+```
+yum install subversion.x86_64 mod_dav_svn.x86_64 httpd.x86_64
+```
+
+- 创建subversion 初始数据库 
+```
+# mkdir -p /home/admin/data/svn_repo
+# svnadmin create --fs-type fsfs /home/admin/data/svn_repo
+```
+	注:运行创建版本库的命令，指定数据存储为 FSFS，如果要指定为 Berkeley DB，则将 fsfs 替换为 bdb
+
+- subversion导入初始项目
+```
+svn import /tmp/project/ file:///home/admin/data/svn_repo --message "init"
+```
+
+- 通过svnlook查看 项目库的信息
+```
+svnlook info /home/admin/data/svn_repo/
+```
+
+- 配置Apache模块 通过web 来访问subversion 版本库,修改 /etc/httpd/conf.d/subversion.conf
+```
+#cat /etc/httpd/conf.d/subversion.conf 
+
+LoadModule dav_svn_module     modules/mod_dav_svn.so
+LoadModule authz_svn_module   modules/mod_authz_svn.so
+
+<Location /svn>
+   DAV svn
+   SVNPath /home/admin/data/svn_repo
+   AuthType Basic
+   AuthName "Subversion Realm"
+   AuthUserFile /etc/httpd/conf.d/svn_user_list
+   AuthzSVNAccessFile /etc/httpd/conf.d/project.access
+   Require valid-user
+</Location>
+```
+- 创建 /etc/httpd/conf.d/svn_user_list 和 /etc/httpd/conf.d/project.access 文件
+  - 使用htpasswd 创建用户列表
+```
+htpasswd -m /etc/httpd/conf.d/svn_user_list usrname
+```
+  - /etc/httpd/conf.d/project.access 参考 svn 官方权限介绍 举例如下
+```
+#cat /etc/httpd/conf.d/project.access 
+[groups]
+ADMIN = admin
+EN_SITE = test1,test2
+CN_SITE = test4
+CRM_MAIL = test7
+DNS = test10
+STORAG = test5,test6
+NETOP = test3
+MONITER = test8,test9
+
+[/] 
+* = r
+@ADMIN = rw
+
+[/trunk/tmp]
+* = rw
+
+[/trunk/nop]
+@NETOP = rw
+
+[/trunk/conf1]
+@EN_SITE = rw
+
+[/trunk/conf2]
+@EN_SITE = rw
+
+[/trunk/conf2]
+@EN_SITE = rw
+
+[/trunk/conf2]
+@CN_SITE = rw
+@STORAG = rw
+
+[/trunk/conf3]
+@CRM_MAIL = rw
+
+[/trunk/MAIL]
+@CRM_MAIL = rw
+
+[/trunk/MONITER]
+@MONITER = rw
+```
+
+- 重启apache,通过 http://server_ip/svn 访问,如果页面出现 说明配置成功
+	注意:/home/admin/data/svn_repo 此目录 要能被apache 运行用户(apache) 读写
+
+- 配置 svn web client 客户端 [WebSVN http://www.websvn.info/] 主要是浏览对比版本作用
+  - 从此处 下载 [websvn-2.1.0.tar.gz http://websvn.tigris.org/files/documents/1380/44451/websvn-2.1.0.tar.gz]
+  - 解压 放到  htdocs 目录中  
+```
+	move websvn-2.1.0  /home/admin/htdocs/websvn
+```
+  - 设置 Apahce 对 websvn 目录作基本认证, 在/etc/httpd/conf.d/subversion.conf 追加内容如下
+```
+<Location /websvn/>
+	AuthType Basic
+	AuthName "subversion repository"
+	AuthUserFile /etc/httpd/conf.d/svn_user_list #svn的用户密码文件。    
+	Satisfy All
+	Require valid-user
+</Location>
+```
+  - 修改websvn 的配置文件， 修改 /home/admin/htdocs/websvn/include/config.php 内容,主要几项如下
+```
+// 添加需要管理的svn库
+$config->addRepository('TEST_SVN', 'file:///home/admin/data/svn_repo');
+
+// 设置中文支持 
+$config->setInputEncoding('utf-8');  // Encoding of result returned by svn command line, etc.
+$config->setContentEncoding('GB18030');  // Content encoding of all your repositories
+
+// 使用snv的权限配置文件作 验证
+$config->useAuthenticationFile('/etc/httpd/conf.d/project.access')
+
+// 打开允许 打包下载 svn 目录内容 (tar.gz)
+$config->allowDownload();
+$config->setTarballTmpDir('/tmp');
+```
+  - 重启 Apache,通过 http://server_ip/webvn 访问 需要输入 用户名和密码 访问正常 说明配置成功
+
+

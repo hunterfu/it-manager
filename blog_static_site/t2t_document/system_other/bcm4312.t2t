@@ -1,0 +1,96 @@
+fedora 系统使用 Broadcom BCM4312 无线网卡
+fedora,wireless card,Broadcom bcm4312,kernel module b43,modprobe,firmware,broadcom,无线网卡
+9efb7a7f-0d6a-4368-8c46-d02015eecc92
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(html): @@ <BR>
+%%TOC
+
+
+在安装完成fedora 系统后 (13,14,15),Broadcom BCM4312 无线网卡就不能使用了,通过如下方法可以启用无线网卡!
+
+
+= 使用内核模块 b43 + firmware 驱动BCM4312 无线网卡 =
+
+fedora 系统安装好后，是有b43模块的,但是bcm4312 无线网卡还是不能驱动，原因在于缺少firmware@@
+可以通过下面方式安装firmware，并重新加载b43模块来启用网卡
+
++ 安装必要的工具
+```
+su -
+yum install b43-fwcutter wget
+```
+
++ 下载windows驱动
+```
+cd /root/source
+wget http://downloads.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2
+```
+
++ 解压，将firmware 解压到 /lib/firmware 目录中
+```
+tar -xjvf broadcom-wl-4.150.10.5.tar.bz2
+cd broadcom-wl-4.150.10.5/driver
+b43-fwcutter -w /lib/firmware/ wl_apsta_mimo.o
+```
+
++ 重新加载b43内核模块
+```
+modprobe -r b43
+modprobe b43
+```
+
+
+经过如上步骤后，你会发现无线网卡的指示灯已经亮了，一会就可以搜到无线信号了！！
+
+
+= 通过 ndiswrapper 驱动BCM4312 无线网卡 =
+
+我们也可以通过 ndiswrapper 来安装Windows版驱动程序
+
++ 获取windows版本的驱动
+```
+ls /root/source
+bcmwl5.inf
+BCMWL5.SYS
+```
+
++ 使用 ndiswrapper 安装驱动
+```
+ndiswrapper -i bcmwl5.inf
+```
+系统会生成/etc/ndiswrapper/bcmwl5目录，并且在目录下生成相关文件
+
++ 可以查看驱动的安装情况：
+```
+ndiswrapper -l
+bcmwl5 : driver installed
+device (14E4:4312) present
+```
+
++ 配置ndiswrapper
+```
+ndiswrapper -m
+cat /etc/modprobe.d/ndiswrapper 
+alias wlan0 ndiswrapper
+```
+
+**ndiswrapper -m** 把wlan0网卡的别名写入模块配置文件，系统启动自动加载ndiswrapper内核模块,并且生成了 /etc/modprobe.d/ndiswrapper 文件
+
++ 驱动安装成功，加载ndiswrapper模块
+```
+modprobe ndiswrapper
+```
+
+
+经过如上步骤后，你会发现无线网卡的指示灯已经亮了，一会就可以搜到无线信号了！！
+
+

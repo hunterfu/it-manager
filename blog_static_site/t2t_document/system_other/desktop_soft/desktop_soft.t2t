@@ -1,0 +1,187 @@
+使用linux桌面办公 常用软件介绍
+linux,desktop,common software,summary,常用软件,Istanbul,Recordmydesktop,multiget,Genay,jstock,rdesktop,hotssh,fbreader,shutter,keepassx
+76a49650-a788-4e4b-8948-26d8433c1f29
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(html): @@ <BR>
+%%TOC
+
+
+在使用linux桌面作为日常工作环境，需要一些常用的软件来完成日常工作，下面我们就来介绍下经常使用的软件!
+
+= linux 屏幕录像软件介绍 =
+
+如果你需要制作一些教学课件，可能就需要用到屏幕录像软件了，方便直观的展示个学习者!
+
+== Istanbul ==
+
+Istanbul是目前比较广泛使用的录像软件之一.Debian LINUX和Fedora LINUX的用户可以从repo(Fedora的主要更新源)安装改软件.@@
+Istanbul的操作界面非常简单,当您第一次启动Istanbul时,在系统桌面面板上会出现一个红色的圆形小按钮,如图1所示:
+
+[Istanbul_1.jpg]
+
+右键单击该按钮,会出现操作选单,如图2所示:
+
+[Istanbul_2.jpg]
+
+您可以选择录制窗口,或者是用鼠标选择录像区域,如果要停止录像,您可以左键单击该按钮,并且它会提示您保存所录得的文件,如图3,4所示:
+
+[Istanbul_3.jpg]
+
+[Istanbul_4.jpg]
+
+提示:在默认情况下Istanbul会把截获的视频以OGG的格式存储.
+
+== Recordmydesktop ==
+
+Recordmydesktop也是被广泛使用的以命令行方式运行并且有图形化界面的屏幕录像软件,@@
+Debian LINUX 的用户可以用命令"sudoapt-getinstallrecordmydesktopgtk-recordmydesktop"安装该软件 @@
+其他用户则需到以下网站下载[http://sourceforge.net/projects/recordmydesktop http://sourceforge.net/projects/recordmydesktop]
+
+Recordmydesktop的工作方式和Istanbul很相似,但是他拥有一些Istanbul所没有的特性,并且这些特性具有很好的自我解释性,一般的用户很容易理解并进行相关配置,在这里不再赘述,其操作界面,如下图所示:
+
+[record_mydesktop.jpg]
+
+经过尝试，觉得recordmydesktop和Istanbul都不错，推荐使用recordmydesktop
+安装方法简单
+``` 
+[root@fedora12]# yum install recordmydesktop gtk-recordmydesktop
+``` 
+或者
+```
+[root@Debian]# apt-get install recordmydesktop gtk-recordmydesktop 
+```
+进行安装,安装完成就可以使用了
+
+
+= linux 多线程下载工具 multiget =
+
+图形界面多线程下载工具[MultiGet http://multiget.sourceforge.net/]，可以运行在绝大多数的Linux桌面环境*而无须任何安装配置。它支持基本的 http/ftp协议，支持断点续传，动态语言转换，下载速度限制，自动／手动MD5校验，任务日志，文件分类管理，支持所有类型的SOCKS代理和 FTP、HTTP代理，可以动态增加／减少线程数量。MultiGet支持跨协议的多地址下载，即可以通过指定任务的多个地址来加速下载，也可以为FTP 协议的任务指定HTTP协议的镜像地址或是相反。通过多个地址的传送可以绕开服务器的连接数限制，某些情况下可以极大地提高下载速度。
+
+MultiGet 对任务和地址的管理是智能化的，对于线程任务的分配采用的是动态技术，即一个线程完成任务后会帮助其他线程继续下载，而不是简单的退出，只要有可能，线程总是尽量处于工作状态。多地址的处理也是动态的智能的（这和flashget不同，它是依靠ping响应来取得最快的地址下载），你无须担心是否会使用到慢速的地址，MultiGet倾向于利用更多更好的有效地址，而不是盯住其中最快的一个。程序会自动逐步向高速地址（不一定是ping值最小的地址）靠拢，导致你的下载会越来越快（当然还是有上限的）。
+
+
+安装非常方便，可以通过yum 或者 apt 安装，以下是运行截图
+
+[multiget.png]
+
+这个是国人写的软件，还是不错的，用起来还可以的，大家多多支持阿！
+
+
+= linux 桌面练习正则表达式的工具Redet = 
+
+Redet (Regular Expression Development and Execution Tool)
+是一个正则表达式工具，可以通过这个软件来练习正则表达式.
+
+用法说明如下图
+
+[redet_use.png]
+
+它可以支持很多命令的正则，只要你的linux系统安装了这些命令或者程序,perl,sed,awk,python等等...
+
+请看官方提供的截图
+
+[redet_office.jpg]
+
+用起来很方便，用这个工具,正则熟悉程度，可以不断提高，快来用吧！
+
+
+= 分区工具gparted类似于Windows下的PQMagic =
+
+gparted是一款易用、稳定的分区软件，类似于Windows下的PQMagic，并且支持常见的大部分的分区格式。
+
+[gparted_fs.jpg]
+
+如果需要调整当前操纵系统所在的分区大小，请使用gparted官网提供的Live CD，该CD中包括了大部分格式的分区支持工具，使用该Live CD启动系统后，就可对硬盘上所有支持格式的分工进行调整。Live CD弥补了gparted不能直接在系统中调整系统分区的不足之处。
+
+gparted在调整分区中，如果分区较大，则需要比较长的时间，所以建议在夜晚临睡之前进行，在完成前期操作，gparted提示正在进行分区操作后，请及时睡眠以免浪费您的时间。
+
+无论如何，调整硬盘分区都是一项有风险的任务，请各位在使用任何分区软件前最好先备份重要的数据，以免发生意外的数据损失。
+
+以下是运行设置截图
+
+[gparted_setting.jpg]
+
+设置完成后，开始应用任务
+
+[gparted_run.png]
+
+
+= 轻量级的IDE Genay 编辑器 =
+
+Geany 可以运行在 Linux、FreeBSD、NetBSD、MacOS X 和 Windows 下,属于跨平台的工具，可以和windows下的notepad++媲美
+Geany 是一个使用 GTK2 工具包开发的快速和轻巧的集成开发环境（IDE），包括以下基本功能：语法高亮显示，代码折叠，代码自动补完，自动补完经常使用的结构（如：if、 for、while 等），自动补完 XML 和 HTML 标记（tag），调用提示，支持 C、Java、PHP、HTML、Python、Perl、Pascal 等语言，符号列表等等。
+
+[genay_edit.png]
+
+上图是 编辑代码功能，左边显示定义的函数和变量，右边是程序代码，语法加亮，并且函数，注释等都可以折叠，非常的方便!
+
+[genay_set.png]
+
+上图是 设置自动语法补全
+
+虽然linux中已经有很多好用的编辑器了，像 Vim、Emacs、Jed、Geany 等等。但我仍然要推荐你试一试！
+
+
+= 股票软件 jstock =
+
+JStock是证券市场的应用，支持在23个国家的股票市场。它提供实时股票信息，盘中股价快照，股票指标编辑器和扫描仪，组合管理，以及市场银聊天功能。
+
+[jstock.png]
+
+
+= 远程桌面软件 rdesktop =
+
+rdesktop 是linux系统中的远程桌面软件，这样我们就可以连接远程window桌面了.
+
+[rdesktop.png]
+
+注意:默认情况下 rdesktop 是在窗口模式的，如果需要全屏(fullscreen) **rdesktop mywindowsserver.com -f**@@
+在全屏模式下，如果想要退出全屏模式，可以使用组合键 **CTRL-ALT-ENTER** 退出全屏模式
+
+
+= linux下 类似window下的secureCrt的ssh的登录工具 hotssh =
+
+在日常管理工作中，需要通过ssh登录到服务器上进行服务器的日常维护. @@
+一般来说，都是登录到统一的跳板机（安全需要）,然后在通过这台跳板机登录到需要管理的服务器上进行管理。@@
+如果需要登录多台服务器的化，就需要输入多次密码（动态密码）,非常不方便！@@
+在windows下有secureCrt 工具，通过clone功能，就只需要输入一次密码，便可以打开多个终端,那么使用linux桌面办公，也有这样的一个工具 hotssh @@
+
+[hotssh.png]
+
+登录后通过菜单 **file -> New tab for connection** 组合键 **Shift+Ctrl+T**，就可以再打开一个同样的终端，不用再次输入密码拉，好好享用吧!
+
+
+= linux 下读书软件 fbreader =
+
+FBReader是一款电子书阅读软件，它支持多种电子书格式，如ePub，fb2，chm， rtf，plucker等，也支持直接阅读zip， tar， gzip，bzip2存档格式的文件。
+
+[fbreader.png]
+
+[fbreader官网 http://www.fbreader.org]
+
+
+= linux 下的截图工具 shutter =
+
+Shutter 是一款很好用的截图工具,可以指定区域截图，可以添加水印等，功能很是强大！
+
+[shutter.png]
+
+[shutter官网 http://shutter-project.org/]
+
+
+= linux 下的密码保存工具 keepassx =
+
+进场上网，有很多各种各样的密码需要保存，keepassx就是这样一种软件，帮你记录需要使用到的用户名和密码等信息！
+
+[keepassx.png]
+
+[keepassx官网 http://www.keepassx.org/]
+

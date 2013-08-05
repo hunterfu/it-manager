@@ -1,0 +1,164 @@
+CentOS 5 VPS（xen) 配置pptpd为VPN服务器 
+centos5,pptpd,vpn,ppp,pptp,xen,mppe,vps
+e2cf87f0-c46e-4f0b-bb6e-da969223e2e6
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%%TOC
+
+
+在访问国外网站的时候，速度不是那么理想，可以在自己的vps上建立vpn服务器,方便自己使用,下面是配置pptpd一点经验@@
+vps 需要是xen的，需要内核支持mppe。本次安装环境是 **centos5.5 32bit vps**
+
+= 部署pptp vpn服务器端=
+
+== 检查内核是否支持mppe ==
+
+在shell中，执行如下命令:
+```
+[root@local]# cd /boot
+[root@local]# grep mppe -i config-`uname -r`
+CONFIG_PPP_MPPE=m
+[root@local]# modprobe ppp-compress-18 && echo ok
+ok
+```
+通过上面命令可以看出,内核已经支持mppe
+
+
+== 安装必要软件 ==
+
+使用yum安装pptpd 软件:
+```
+[root@local]# cd /tmp
+[root@local]# wget http://acelnmp.googlecode.com/files/pptpd-1.3.4-1.rhel5.1.i386.rpm
+[root@local]# yum localinstall pptpd-1.3.4-1.rhel5.1.i386.rpm --nogpg -y
+```
+
+
+== 设置 pptpd 软件 ==
+
+- 编辑**/etc/pptpd.conf**配置文件,内容如下:
+```
+[root@local]# cat /etc/pptpd.conf
+option /etc/ppp/options.pptpd
+logwtmp
+localip 192.168.8.1
+remoteip 192.168.8.2-40
+```
+
+- 编辑**/etc/ppp/options.pptpd**配置文件，内容如下:
+```
+[root@local]# cat /etc/ppp/options.pptpd
+name pptpd
+refuse-pap
+refuse-chap
+refuse-mschap
+require-mschap-v2
+require-mppe-128
+proxyarp
+lock
+nobsdcomp
+novj
+novjccomp
+nologfd
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+```
+最后2行设置DNS为Google的DNS.
+
+- 添加VPN用户和密码(**/etc/ppp/chap-secrets**),按照下面格式.密码后的*号保留，内容如下:
+
+```
+[root@local]# cat /etc/ppp/chap-secrets
+test1 pptpd test1 *
+test2 pptpd test2 *
+test3 pptpd test3 *
+```
+
+- 设置ip转发 
+  - 编辑/etc/sysctl.conf文件，找到**net.ipv4.ip_forward = 0**这一行，修改为 **net.ipv4.ip_forward = 1**
+  - 运行下命令让配置生效
+```
+sysctl -p
+```
+
+
+== 启动pptpd服务和打开nat ==
+
+- 启动pptpd服务 
+```
+/etc/init.d/pptpd restart
+```
+- 最后开启iptables地址转换
+```
+iptables -t nat -A POSTROUTING -j MASQUERADE
+```
+- 设置iptables和pptpd开机自动启动
+```
+chkconfig pptpd on 
+chkconfig iptables on
+```
+
+注意:如果有防火墙的话要开放入下端口
+```
+iptables -A INPUT -p tcp --dport 1723 -j ACCEPT
+iptables -A INPUT -p gre -j ACCEPT
+```
+
+至此服务端已经设置完成! 下面看看客户端如何配置了
+
+
+= pptpd 服务器端诊断 =
+
+- 如果遇到问题，可以通过tcpdump来确认问题所在
+```
+tcpdump -i eth0 port 1723 or proto 47 -n
+```
+
+- 特殊情况注意：开启pptp vpn转发，vpn服务器和内网路由器
+```
+modprobe ip_conntrack_pptp
+modprobe ip_nat_pptp
+```
+
+- Gre 协议traceroute
+```
+hping3 -0 vpn_server_ip  -H 47 -d 10 --traceroute
+```
+
+
+= 可能碰到的错误说明 =
+
+- 在拨号时候，出现hostname不能反解析问题
+```
+Dec 16 02:31:32 my_kvm_test pppd[1722]: rc_get_ipaddr: couldn't resolve hostname: my_kvm_test
+Dec 16 02:31:32 my_kvm_test pppd[1722]: rc_own_ipaddress: couldn't get own IP address
+Dec 16 02:31:32 my_kvm_test pppd[1722]: Peer user failed CHAP authentication
+Dec 16 02:31:32 my_kvm_test pppd[1722]: Connection terminated.
+Dec 16 02:31:32 my_kvm_test pppd[1722]: Exit.
+```
+只需要在dns中或者 /etc/hosts中 加入主机名和主机ip的映射关系,直接在 /etc/hosts中加入一行
+```
+127.0.0.1	my_kvm_test
+```
+
+- 在验证测试的时候，虽然结果返回是正确的，但是会出现 **radclient: received response to request we did not send** 错误,例子如下:
+```
+#/usr/bin/radtest test testing localhost 0 testing123 
+Sending Access-Request of id 37 to 127.0.0.1 port 1812
+	User-Name = "test"
+	User-Password = "testing"
+	NAS-IP-Address = 255.255.255.255
+	NAS-Port = 0
+rad_recv: Access-Accept packet from host 192.168.0.10:1812, id=37, length=20
+radclient: received response to request we did not send.
+```
+出现此问题的原因是**发送请求的ip** 和 **回应请求的ip** 不一样,本例中是  请求ip:127.0.0.1 回应ip:192.168.0.10:1812
+

@@ -1,0 +1,242 @@
+网路启动服务器安装和配置方法(pxe+tftp+dhcpd)
+netboot,thin client,pxe,tftp,dhcpd,linux
+fce7ba4d-1425-4c6f-ae5d-d5c8c9e03ebc
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%%TOC
+
+
+在大规模安装服务器时，需要批量自动化方法来安装服务器，来减少日常的工作量. @@
+但是批量自动化安装服务器的基础是网络启动服务器(bootserver). @@
+下面我们就介绍一下 网络启动服务器的 安装和配置方法，供大家实践之用！
+
+
+= 本文用到的术语解释 =
+------------------------------------------------------------------------------
+: PXE
+PXE(Pre-boot Execution Environment)是由Intel设计的协议，它可以使计算机通过网络而不是从本地硬盘、光驱等设备启动。现代的网卡，一般都内嵌支持PXE的ROM芯片。当计算机引导时，BIOS把PXE client调入内存执行，并显示出命令菜单，经用户选择后，PXE client将放置在远端的操作系统通过网络下载到本地运行.
+
+: DHCP
+DHCP(Dynamic Host Control Protocol)  动态主机控制协议.用于集中、动态的给客户机分配IP地址.
+
+: TFTP
+TFTP(trivial file transfer protocol)，一种开销很小的文件传输协议，语法类似ftp.因简单、高效，常用于网络设备的OS和配置更新.
+
+
+= PXE 原理 =
+------------------------------------------------------------------------------
+== PXE Client Api (架构) ==
+
+[pxe_api.gif]
+
+图 PXE API架构图。（图片来源：PXE Specification Version 2.1） 
+
+上图说明: 当BIOS把PXE Client载入记忆体，此时便具有DHCP Client及TFTP Client的能力。@@
+PXE Client具备DHCP Client能力，可以透过DHCP Server来取得IP位址。 @@
+PXE Client具备TFTP Client能力”，可通过TFTP来下载kernel image等文件。
+
+
+== PXE启动流程图(pxe boot) ==
+
+[pxe_boot.png]
+
+上图启动流程说明如下:
+
++ PXE Client 向 UDP 67端口 广播 DHCPDDISCOVER 消息.
++ DHCP SERVER 或者 DHCP Proxy 收到广播消息后,发送DHCPOFFER(包含ip地址)消息 到 PXE Client的 68 端口. 
++ PXE Client 发送 DHCPREQUEST 消息到 DHCP SERVER ,获取启动文件(boot file name).
++ DHCP SERVER 发送DHCPACK(包含Network Bootstrap Program file name)消息 到PXE Client.
++ PXE Client 向 Boot Server 获取 NBP(Network Bootstrap Program) 文件.
++ PXE Client 从TFTP SERVER 下载 NBP,然后在客户端执行NBP文件
+
+
+注意: 在NBP执行初始化后，NBP会按照自己默认的方式从TFTP SERVER中下载其他所需的配置文件. @@
+这个时候 PXE 启动流程已经完成了，剩下的工作都是有NBP来执行完成的. @@
+
+例如: pxelinux.0(NBP) 他会下载 default 配置文件,来显示菜单,根据需要启动不同的kernel image. @@
+如果是RIS（window安装)的NBP,会启动 Windows boot loader 来执行安装部署widows任务.
+
+
+= PXE BOOT Server 配置过程 =
+------------------------------------------------------------------------------
+**以下配置和测试 都是在 Centos5 上完成的，其他系统请酌情参考!**
+
+== DHCP的安装与配置 ==
+
+
+在PXE引导过程中，PXE Client通过DHCP Server 获取ip地址，NBP文件名称，然后从TFTP SERVER 下载NBP文件并在客户端执行，从而启动计算机。
+
++ 请确认系统中安装 dhcp 软件包
++ 编辑 /etc/dhcpd.conf  配置文件,配置文件内容如下
+
+```
+[root@linux]# cat /etc/dhcpd.conf
+ddns-update-style interim;
+allow booting;					#定义能够PXE启动
+allow bootp;					#定义支持bootp
+next-server 192.168.0.1;	 	#TFTP Server的IP地址
+filename "pxelinux.0";			#bootstrap 文件(NBP)
+
+default-lease-time 1800;
+max-lease-time 7200;
+ping-check true;
+option domain-name-servers 192.168.0.1;
+
+subnet 192.168.0.0 netmask 255.255.255.0
+{
+	range 192.168.0.128 192.168.0.220;
+	option routers 192.168.0.1;
+	option broadcast-address 192.168.0.255;
+}
+```
+
+注意:在 /etc/dhcpd.conf 配置文件中 **filename "pxelinux.0"；** 文件目录是相对于 tftp 的根目录(默认是 /tftpboot),@@
+所以文件的绝对路径就是： /tftpboot/pxelinux.0"；当然也可以指定为其它的路径.
+
++ 配置完成后，重启DHCP服务，并将它设为开机自启动
+```
+[root@linux]# /etc/init.d/dhcpd start
+启动 dhcpd：                                               [确定]
+[root@linux]# chkconfig --level 35 dhcpd on
+```
+
+
+== 安装配置TFTP服务器 ==
+
+
+在PXE引导过程中,PXE Client 使用TFTP协议从TFTP服务器下载bootstrap文件并执行.
+
++ 请确认系统中安装 tftp-server 软件包
++ 配置tftp服务,tftp 服务由xinetd服务管理 @@
+  编辑 /etc/xinetd.d/tftp 文件，将 disable = yes 改为：disable = no .配置文件内容如下:
+
+```
+[root@linux]# cat  /etc/xinetd.d/tftp
+# default: off
+# description: The tftp server serves files using the trivial file transfer \
+#       protocol.  The tftp protocol is often used to boot diskless \
+#       workstations, download configuration files to network-aware printers, \
+#       and to start the installation process for some operating systems.
+# default: off
+# description: The tftp server serves files using the trivial file transfer \
+#	protocol.  The tftp protocol is often used to boot diskless \
+#	workstations, download configuration files to network-aware printers, \
+#	and to start the installation process for some operating systems.
+service tftp
+{
+	socket_type		= dgram
+	protocol		= udp
+	wait			= yes
+	user			= root
+	server			= /usr/sbin/in.tftpd
+	server_args		= -s /tftpboot
+	disable			= no
+	per_source		= 11
+	cps			= 100 2
+	flags			= IPv4
+}
+```
+
+注意:TFTP服务器的根目录是 /tftpboot，配置完成后重启xinetd服务，使TFTP服务器生效.
+
+```
+[root@linux]# /etc/init.d/xinetd restart
+```
+
++ bootstrap 文件配置 (NBP),这里使用 pxelinux.0
+
+bootstrap文件由syslinux软件包提供，我们只要安装了syslinux，将 pxelinux.0 这个文件复制到 /tftpboot 目录即可：
+
+```
+[root@linux]# rpm -ql syslinux | grep "pxelinux.0"
+/usr/lib/syslinux/pxelinux.0
+[root@linux]# cp /usr/lib/syslinux/pxelinux.0 /tftpboot/
+```
+
++ 配置 pxelinux.0(NBP) 使用的配置文件
+
+
+- 接下来创建/tftpboot/pxelinux.cfg/ 目录，该目录用于存放客户端的配置文件
+```
+[root@linux]# mkdir /tftpboot/pxelinux.cfg
+```
+
+- 默认配置文件default,文件内容如下
+
+```
+[root@linux]# cat /tftpboot/pxelinux.cfg/default
+
+default linux		# 默认启动的是 'label linux' 中标记的启动内核
+prompt 1     		# 显示 'boot: ' 提示符
+timeout 60      	# 等待超时时间，单位为 1/10 秒,超时后自动启动 默认指定的label     
+display boot.msg	# 显示boot.msg的内容，文件路径是相对tftp server 的根目录(默认 /tftpboot),所以boot.msg文件绝对路径在 /tftpboot/boot.msg .
+F1 boot.msg  		# 按下'F1' 键后显示的文件
+F2 options.msg
+F3 general.msg
+F4 param.msg
+F5 rescue.msg
+
+label  1				# 'label' 指定你在 'boot:' 提示符下输入的关键字。
+kernel linux/rh44-x86-32/vmlinuz
+append initrd=linux/rh44-x86-32/initrd.img ramdisk_size=8192  ks=http://install.test.com/conf/ks_module.cfg ksdevice=link 
+
+label  2
+kernel linux/rh44-x86-64/vmlinuz
+append initrd=linux/rh44-x86-64/initrd.img ramdisk_size=8192  ks=http://install.test.com/conf/ks_module.cfg ksdevice=link
+
+label  3
+kernel linux/rh46-x86-64/vmlinuz
+append initrd=linux/rh46-x86-64/initrd.img ramdisk_size=8192  ks=http://install.test.com/conf/ks_module.cfg ksdevice=link 
+
+label  4
+kernel linux/rh46-x86-32/vmlinuz
+append initrd=linux/rh46-x86-32/initrd.img ramdisk_size=8192  ks=http://install.test.com/conf/ks_module.cfg ksdevice=link 
+
+label  5 
+kernel image/linux/rh38-x86-32/vmlinuz
+append initrd=image/linux/rh38-x86-32/initrd.img ramdisk_size=8192  ks=http://install.test.com/conf/ks_module.cfg ksdevice=link 
+
+label  6
+kernel linux/rh38-x86-64/vmlinuz
+append initrd=linux/rh38-x86-64/initrd.img ramdisk_size=8192  ks=http://install.test.com/conf/ks_module.cfg ksdevice=link 
+```
+
+注意事项: 默认 pxelinux.0 和 pxelinux.cfg 一定要在同一个目录下  
+
+
+== pxelinx.0(NBP)程序配置文件搜索顺序 ==
+
+
+由于多个客户端可以从一个PXE服务器引导，PXE引导映像使用了一个复杂的配置文件搜索方式来查找针对客户机的配置文件. @@
+假设 客户端服务器的网卡的MAC地址为 88:99:AA:BB:CC:DD ，对应的IP地址为192.168.1.195，那么客户端的pxelinux.0 程序 搜索顺序如下:
+
++ 首先以MAC地址为文件名匹配的配置文件,如果不存在，继续查找.
++ 其次以IP地址来查找.根据IP地址16进制命名的配置文件查找,从小范围到打大分为查找(子网掩码由小到大),如果不存在，继续查找.
++ 最后尝试default文件 
+
+
+总体来说，pxelinux.0 搜索的文件的顺序是(可以通过tcpdum得到结果)：
+```
+/tftpboot/pxelinux.cfg/01-88-99-aa-bb-cc-dd	
+/tftpboot/pxelinux.cfg/C0A801C3
+/tftpboot/pxelinux.cfg/C0A801C
+/tftpboot/pxelinux.cfg/C0A801
+/tftpboot/pxelinux.cfg/C0A80
+/tftpboot/pxelinux.cfg/C0A8
+/tftpboot/pxelinux.cfg/C0A
+/tftpboot/pxelinux.cfg/C0
+/tftpboot/pxelinux.cfg/C
+/tftpboot/pxelinux.cfg/default
+```
+=  总结(Summary) =
+------------------------------------------------------------------------------
+[pxe_menu.png]
+
+经过如上步骤，现在可以通过pxe方式网络引导操作系统,可以安装系统,也可以远程启动无盘工作站等.
+

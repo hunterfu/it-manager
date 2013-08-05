@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <author>北方人(hunterfu)</author>
+    <title>运维之道 - 51know.info</title>
+    <TMPL_LOOP Rss>
+    <entry>
+        <title><TMPL_VAR title></title>
+        <link href="<TMPL_VAR link>"/>
+        <!-- <content type="html"><TMPL_VAR content></content> -->
+    </entry>
+    </TMPL_LOOP>
+</feed>

@@ -1,0 +1,102 @@
+PyYAML 配置文件格式简介以及在python上的应用
+pyyaml,yaml,python,配置文件
+f87bbcc9-ca39-4a13-91eb-ff32e5995d83
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(html): @@ <BR>
+%%TOC
+
+
+在日常系统管理工作中，需要编写脚本来完成特定的功能，为了增加脚本的灵活性，需要有配置文件来完成！@@
+yaml 是一中简要明了的配置文件格式，下面我们就简要说明下.
+
+
+= YAML 简述 =
+
+- YAML的可读性好。
+- YAML和脚本语言的交互性好。
+- YAML使用实现语言的数据类型。
+- YAML有一个一致的信息模型。
+- YAML易于实现。
+- YAML可以基于流来处理；
+- YAML表达能力强，扩展性好。
+- YAML语法简单 Structure通过空格来展示,Sequence里的项用"-"来代表，Map里的键值对用":"分隔。
+- 目前现有的语言实现广泛：Ruby，Java，Perl，Python，PHP，OCaml，JavaScript。除了Java，其他都是脚本语言
+
+
+总之，YAML试图用一种比XML更敏捷的方式，来完成XML所完成的任务。更多的内容及规范参见 [http://www.yaml.org http://www.yaml.org]
+
+
+= YAML 配置文件 =
+
+== 简单的配置文件范例 ==
+
+配置文件如下,一般YAML文件扩展名为.yaml:
+
+```
+[root@localhost]# cat us-cdn.yaml 
+templateName: "us-cdn"
+version: "0.1"
+
+actionsequence:
+ - install
+ - sync
+
+sync:
+ - cmd: "svn export http://svn.test.com/"
+   SuccessMsg: "OK"    
+   FailedMsg: "Run Cmd Error %s"
+
+install:
+ - cmd: "yum install squid squid-script"
+   SuccessMsg: "OK"    
+   FailedMsg: "Run Cmd Error %s"
+```
+
+从上面的配置文件来看，非常容易读懂和理解，层次关系也非常明了。
+
+
+== PyYAML 模块来解析YAML配置文件 ==
+
+参考测试程序:
+```
+[root@localhost]# cat test_yaml.py 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import yaml
+import sys
+from pprint import pprint
+
+base_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+configFile = "%s/%s" % (base_dir,"us-cdn.yaml")
+stream = file(configFile, 'r')   
+data = yaml.load(stream)
+pprint(data)
+```
+
+执行结果如下:
+```
+[root@localhost]# python test_yaml.py 
+{'actionsequence': ['install', 'sync'],
+ 'install': [{'FailedMsg': 'Run Cmd Error %s',
+              'SuccessMsg': 'OK',
+              'cmd': 'yum install squid squid-script'}],
+ 'sync': [{'FailedMsg': 'Run Cmd Error %s',
+           'SuccessMsg': 'OK',
+           'cmd': 'svn export http://svn.test.com/'}],
+ 'templateName': 'us-cdn',
+ 'version': '0.1'}
+```
+
+从执行结果可以看出,最终返回的是字典结构，你可以方便的引用。在写一些系统运维管理脚本的化，可以参考使用yaml格式的配置文件.
+
+

@@ -1,0 +1,268 @@
+ATS(Apache Traffic Server) 安装使用指南
+Author :北方人<hunterfu2009@gmail.com>
+最后更新时间: %%mtime(%Y-%m-%d %H:%M)
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%%TOC
+
+
+ATS,是高性能的cache/proxy系统，可以选择这个.
+简单对比squid/ngnix的不同点：ATS是一个专业的ISP级别的cache/proxy系统.
+
+
+= 安装ATS软件(在32位linux下测试过) =
+
+
+== 下载软件源码包 ==
+
+可以从此下载 当前稳定版本 **Current (stable) Release -- 2.0.1** [Download http://trafficserver.apache.org/downloads.html]
+
+
+== 编译安装ATS依赖的软件包如 ==
+
+- libstdc++-devel
+- gcc-c++
+- tcl-devel
+- expat-devel
+- libsqlite3x
+- sqlite-devel
+- libsqlite3x-devel
+- pcre-devel
+
+
+== 解压源代码，进入目录，编译安装 ==
+```
+tar -xjvf trafficserver-2.0.1.tar.bz2 
+cd trafficserver-2.0.1
+./configure --prefix=/opt/ats --with-tcl=/usr/lib/
+make 
+make install
+```
+
+
+= 配置软件，主要配置文件有3个 =
+
+配置文件都在 **/opt/ats/etc/trafficserver**,关键的有3个需要根据需求进行调整
+
+
+== 主配置文件 records.config ==
+
+|| 主要配置项 | 说明 |
+| **CONFIG proxy.config.proxy_name STRING mycache1** |  修改成cache的server name即可 |
+| **CONFIG proxy.config.cluster.ethernet_interface STRING eth0** | 修改成需要侦听的interface名称，默认是 eth0 |
+| **CONFIG proxy.config.admin.user_id STRING nobody** | 用来运行 traffic server 的用户,默认是 nobody |
+| **CONFIG proxy.config.http.server_port INT 8080** | traffic server 侦听的端口，默认是8080 |
+| **CONFIG proxy.config.url_remap.remap_required INT 0 | 代理模式(forward proxy mode)，用在公司内部的代理服务器，默认是 1 ||
+
+其他配置可自行根据情况修改
+
+
+== cache内容保存配置 storage.config ==
+
+比如我们要设定一个512MB的cache文件
+
+- 用全路径的方式:	
+```
+/opt/ats/var/trafficserver 536870912
+```
+
+- 相对路径方式(软件安装目录是 /opt/ats):
+```
+./var/trafficserver 536870912 
+```
+
+上述两种方式设定结果是相同的
+
+
+= 启动服务与监控 =
+
+== 启动关闭服务 ==
+
+执行如下命令启动
+```
+/opt/ats/bin/trafficserver start
+```
+
+
+== proxy 代理配置remap.conf ==
+
+如果要对 www.example.com加速
+则写为
+
+  map http://www.example.com http://ip(或者域名)
+       |                             |_____ 代理服务器需要访问的源站点的ip或者域名
+       |__用户最终访问的域名
+
+2.3. cache 存储空间配置文件 storage.config
+
+使用raw deivces，将物理磁盘绑定到raw device
+
+2.3.1. 用mknod 创建虚拟raw 设备
+
+   mknod /dev/rawctl c 162 0
+    chmod 600 /dev/rawctl  这个很重要，还需要给与运行traffice server的属主，我是用root运行，所有这样就可以了
+        mknod /dev/raw_sdb c 162 1
+        mknod /dev/raw_sdc c 162 2
+
+2.3.2. 绑定物理磁盘到raw 设备
+
+    /usr/bin/raw /dev/raw_sdb /dev/sdb
+    /usr/bin/raw /dev/raw_sdc /dev/sdc
+
+2.3.3. 查询设备绑定情况
+
+    /usr/bin/raw -q /dev/raw/raw_sdb
+   或者
+   /usr/bin/raw -a
+
+2.3.4. 计算raw空间
+
+    blockdev --getsize /dev/raw_sdb
+    blockdev --getss /dev/raw_sdb
+
+让后将这2个值相乘得到 raw最终值 即下面的 300000000000
+
+2.3.5. 修改 storage.config 输入
+
+  /dev/raw_sdb   300000000000
+  /dev/raw_sdc   300000000000
+
+3. 管理软件
+
+3.1. 启动manager
+
+  nohup  /home/ts/bin/traffic_manager  >../var/log/trafficserver/ts.log  2>&1 &
+
+查看进程情况
+
+  ps -ef
+
+应该能看到
+
+  bin/traffic_server -M -A8:X ##server 服务进程
+
+  #netstat -npa |grep traff
+  tcp        0      0 0.0.0.0:20098               0.0.0.0:*                   LISTEN      18117/traffic_manag
+  tcp        0      0 0.0.0.0:9898                0.0.0.0:*                   LISTEN      18117/traffic_manag
+  tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN      18117/traffic_manag
+  tcp        0      0 0.0.0.0:8083                0.0.0.0:*                   LISTEN      18117/traffic_manag
+  tcp        0      0 0.0.0.0:8084                0.0.0.0:*                   LISTEN      18148/traffic_serve
+  tcp        0      0 0.0.0.0:8088                0.0.0.0:*                   LISTEN      18117/traffic_manag
+  udp        0      0 172.22.26.91:29611          172.22.5.128:53             ESTABLISHED 18148/traffic_serve
+  unix  2      [ ACC ]     STREAM     LISTENING     738846890 18117/traffic_manag ./conf/yts//process_server
+  unix  2      [ ACC ]     STREAM     LISTENING     738846893 18117/traffic_manag /home/ts/etc/trafficserver/mgmtapisocket
+  unix  2      [ ACC ]     STREAM     LISTENING     738846895 18117/traffic_manag /home/ts/etc/trafficserver/eventapisocket
+  unix  2      [ ACC ]     STREAM     LISTENING     738847082 18117/traffic_manag /home/ts/etc/trafficserver/cli
+  unix  2      [ ]         DGRAM                    738846975 18148/traffic_serve
+  unix  3      [ ]         STREAM     CONNECTED     738846917 18117/traffic_manag ./conf/yts//process_server
+  unix  3      [ ]         STREAM     CONNECTED     738846916 18148/traffic_serve
+  unix  2      [ ]         DGRAM                    738846880 18117/traffic_manag
+
+3.2. 管理
+
+3.2.1. traffic_line
+
+- /home/ts/bin/traffic_line -x 生效，不需要重启应用
+
+3.2.2. start_traffic_shell
+
+    * /home/ts/bin/start_traffic_shell
+
+  %提示符
+  %show
+  % show:cache  ###cache 基本配置
+  FTP Caching ---------------------------- off
+  NNTP Caching --------------------------- on
+  Ignore User Requests To Bypass Cache --- on
+  Maximum HTTP/FTP Object Size ----------- 1024000
+  Freshness
+    Verify Freshness By Checking --------- When The Object Has Expired
+    Minimum Information to be Cacheable -- A Last Modified Time
+    If Object has no Expiration Date:
+      Leave it in Cache for at least ----- 86400 s
+      but no more than ------------------- 86400 s
+    FTP Cached Objects Expire After ------ 259200 s
+  Variable Content
+    Cache Responses to URLs that contain
+      "?",";","cgi" or end in ".asp" ----- on
+    Alternates Enabled ------------------- off
+    Vary on HTTP Header Fields:
+      Text ------------------------------- NULL
+      Images ----------------------------- NULL
+      Other ------------------------------ NULL
+    Cache responses to requests containing cookies for:
+      All Content-types
+
+  % show:cache-stats
+
+  Bytes Used --- 74 GB
+  Cache Size --- 1395 GB
+  --RAM Cache--
+  Total Bytes -- 1497216000
+  Bytes Used --- 950272
+  Hits --------- 34
+  Misses ------- 88
+
+  % show:proxy-stats
+
+  Document Hit Rate -------- 58.490568 %   *
+  Bandwidth Saving --------- 10.361657 %   *
+  Cache Percent Free ------- 94.634068 %
+  Open Server Connections -- 0
+  Open Client Connections -- 0
+  Open Cache Connections --- 0
+  Client Throughput -------- 0.000000 MBit/Sec
+  Transaction Per Second --- 0.000000
+
+  * Value represents 10 second average.
+
+其他请大家参考帮助或者自己测试使用
+
+3.2.3. logstats
+
+    * /home/ts/bin/logstats –help
+
+  Usage: logstats [-l logfile] [-o origin[,...]] [-O originfile] [-m minhits] [-inshv]
+    switch__________________type__default___description
+    -h, --help              tog   true      Give this help
+    -f, --log_file          str   (null)    Specific logfile to parse
+    -o, --origin_list       str   (null)    Only show stats for listed Origins
+    -O, --origin_file       str   (null)    File listing Origins to show
+    -i, --incremental       tog   false     Incremental log parsing
+    -S, --statetag          str   (null)    Name of the state file to use
+    -t, --tail              int   0         Parse the last <sec> seconds of log
+    -s, --summary           tog   false     Only produce the summary
+    -y, --ymon              tog   false     Output is formatted for YMon/Nagios
+    -Y, --ysar              tog   false     Output is formatted for YSAR
+    -m, --min_hits          i64   0         Minimum total hits for an Origin
+    -a, --max_age           int   0         Max age for log entries to be considered
+    -l, --line_len          int   78        Output line length
+    -T, --debug_tags        str   (null)    Colon-Separated Debug Tags
+    -V, --version           tog   false     Print Version Id
+
+例如
+
+  logstats -i www.example.com
+
+会根据日志分析cache的命中等情况
+
+3.2.4. traffic_server
+
+如果服务器down掉，默认会生成core文件，在/home/ts
+使用
+
+  /home/ts/bin/traffic_server -c core.1234
+
+来阅读coredump文件
+
+-----------------------------------------------------------------------------------------
+Author : 北方人<hunterfu2009@gmail.com>
+更新时间 : %%mtime(%Y-%m-%d %H:%M)
+

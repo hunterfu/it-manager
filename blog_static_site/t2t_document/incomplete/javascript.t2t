@@ -1,0 +1,108 @@
+
+JavaScript中的Button对象属性示例
+
+Button.onFocus
+
+Button.onFocus()
+支持脚本：JavaScript 1.1+ ， JScript1.0+ ，Nav 3+ ，IE 3+
+语法：onFocus()="函数或者命令"
+说明：onFocus()事件在<input>标签中定义。功能是处理按钮获得焦点时应进行的操作。
+例子：当按钮1获得焦点时，显示一个提示框。
+ 
+<html>
+  <form name="myForm">
+    <input type="button" name="mybutton" value="按钮1" onFocus="alert(''我得到焦点了！'')">
+  </form>
+</html>
+
+
+Button.onClick
+
+Button.onClick()
+支持脚本：JavaScript 1.1+ ， JScript1.0+ ，Nav 3+ ，IE 3+
+语法：onClick()="函数或者命令"
+说明：onClick事件定义在<input>标签中，用于处理按钮被点击时的对应操作。
+例子：使用onClick事件，在按钮1被点击时弹出一个提示框。
+ 
+<html>
+<form name="myForm">
+   <input type="button" name="mybutton" value="按钮1" onClick="alert(''我被鼠标点中了！'')">
+</form>
+</html>
+ 
+Button.onBlur
+
+Button.onBlur()
+支持脚本：JavaScript 1.1+ ， JScript1.0+ ，Nav 3+ ，IE 3+
+语法：onBlur()="函数或者命令"
+说明：onBlur()事件在<input>标签中定义。功能是处理按钮失去焦点时应进行的操作。
+例子：当按钮1失去焦点时，显示一个提示框。
+ 
+<html>
+<form name="myForm">
+   <input type="button" value="按钮1" name="mybutton" onBlur="alert(''按钮1失去焦点'')">
+</form>
+</html>
+
+Button.name
+
+Button.name
+支持脚本：JavaScript 1.0+ JScript 1.0+ Nav 2+ IE 3+ Opera 3+
+语法：document.form.button.name 
+说明：name属性用来访问<input>标签定义的按钮的Name属性。此属性是一个可读/写字符串。
+ 
+例子：创建一个按钮，当点击他时，显示按钮的name属性。
+ 
+<html>
+ 
+<form name="myform">
+  <input type="button" value="aButton" name="myButton" onClick="showmsg()">
+</form>
+ 
+<script language="JavaScript">
+<!--
+ function showmsg()
+{
+  var showstr;
+  showstr="按钮的名字是："+document.myform.myButton.name;
+  alert(showstr);
+}
+-->
+</script>
+</html>
+
+Button.form
+
+Button.form
+ 
+支持脚本：JavaScript 1.1+ ， JScript1.0+ ，Nav 3+ ，IE 3+ , Opera 3+
+语法：document.form.button.form
+说明：form属性提供了从按钮访问其父对象form的途径。
+ 
+例子：判断按钮1的from属性与所在的buttonform是否一个对象
+ 
+<html>
+<form name="buttonform">
+  <input type="button" name="button1" value="按钮1" onClick="check()">
+</form>
+ 
+<script language="JavaScript">
+<!--
+function check(){
+  if (document.buttonform == document.buttonform.button1.form){
+    alert("确实是一个对象！");
+  } else {
+    alert("根本就不是一个对象！")
+  }
+}
+-->
+</script>
+ 
+</html>
+
+Button.focus()
+
+Button.focus()
+支持脚本：JavaScript 1.1+ ， JScript1.0+ ，Nav 3+ ，IE 3+
+语法：document.form.button.focus()
+说明：focus()方法使按钮不用调用onFocus事件处理器而获得焦点。 

@@ -1,0 +1,17 @@
+linux 桌面泡泡龙游戏 Frozen Bubble
+
+Frozen Bubble 是一款泡泡龙样式的可在多个操作系統包括Linux，Windows，Mac OS X和智能手机的SymbianS60上运行的开源游戏。
+
+jpg
+
+Frozen Bubble原版用Perl写成，作者是Guillaume Cottenceau，使用Simple DirectMedia Layer库[1][2] 游戏拥有100个关卡，附带关卡编辑器 和很多专门针对Linux开发的游戏一样，使用Tux为主要角色，发射彩色冰泡泡到同色的泡泡旁边，成组消灭它们。在泡泡到达底部之前全部消除。
+
+Version 2.0 提供多人游戏，通过LAN和Internet。同一台电脑也可以这个版本只在Linux下。锁链反应模式(chain reaction mode) （掉下的泡泡急速上升可能制造连锁, 掉下更多泡泡）联网模式也可使用，极大改变了游戏方式。
+
+放2张 fedora 10 下的截图 (可以使用命令 yum install frozen-bubble 安装游戏)
+
+jpg
+jpg
+
+项目主页： http://www.frozen-bubble.org/
+下载地址： http://www.frozen-bubble.org/downloads/ 

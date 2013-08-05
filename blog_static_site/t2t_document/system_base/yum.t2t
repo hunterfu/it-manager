@@ -1,0 +1,272 @@
+软件包管理器yum 用法指南以及RPM仓库搭建方法
+yum,rpm,repo,createrepo,rpm包管理,rpm仓库
+3fcc5b5e-1989-4f15-84ff-6bf1bd6ecf19
+
+
+%!Target  : html
+%!Encoding: utf-8
+%! Style  :	main.css 
+%! Style  :	handheld.css
+%! Style  :	commonPrint.css
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%%TOC
+
+= Yum 包管理器 介绍 =
+
+- yum是什么
+  - yum : Yellow dog Updater, Modified
+  - 主要功能是更方便的添加/删除/更新RPM包.
+  - 它能自动解决包的倚赖性问题.
+  - 它能便于管理大量系统的更新问题
+
+- yum特点
+  - 可以同时配置多个资源库(Repository)
+  - 简洁的配置文件(/etc/yum.conf
+  - 自动解决增加或删除rpm包时遇到的倚赖性问题
+  - 使用方便
+  - 保持与RPM数据库的一致性
+
+- yum安装
+  - RHEL3,和 RHEL4 系列可以使用 CentOS 提供的 yum RPM 包进行安装。
+  - RHEL5 默认安装YUM,直接可以使用
+  - CentOS 默认安装YUM,直接可以使用
+  - Fedora 默认安装YUM,直接可以使用
+  
+
+= Yum 指令使用详解 =
+
+
+- 第一次使用yum或yum资源库有更新时,yum会自动下载所有所需的包索引文件放置于/var/cache/yum目录下,所需时间可能较长.
+
+- rpm包的更新 相关指令
+  - 检查可更新的rpm包
+```
+#yum check-update
+```
+  - 更新所有的rpm包
+```
+#yum update
+```
+  - 更新指定的rpm包,如更新kernel和kernel source
+```
+#yum update kernel kernel-source
+```
+  - 大规模的版本升级,与yum update不同的是,连旧的淘汰的包也升级
+```
+#yum upgrade
+```
+- rpm包的安装和删除 相关指令
+
+  - 安装rpm包,如xmms-mp3
+```
+#yum install xmms-mp3
+```
+  - 删除rpm包,包括与该包有倚赖性的包
+```
+#yum remove xmms-mp3   或者	yum erase xmms-mp3 (高版本)
+```
+
+- yum缓存(/var/cache/yum/)相关参数
+
+  - 清除缓存中rpm包文件
+```
+#yum clean packages
+```
+  - 清除缓存中rpm头文件
+```
+#yum clearn headers
+```
+  - 清除缓存中所有相关信息
+```
+#yum clearn all
+```
+- rpm包信息和列表查询 相关指令
+
+  - 列出资源库中所有可以安装或更新的rpm包
+```
+#yum list
+```
+  - 列出资源库中特定的可以安装或更新以及已经安装的rpm包
+```
+#yum list glibc
+#yum list glibc*
+```
+  - 列出资源库中所有可以更新的rpm包
+```
+#yum list updates
+```
+  - 列出已经安装的所有的rpm包
+```
+#yum list installed
+```
+  - 列出已经安装的但是不包含在资源库中的rpm包(通过其它网站下载安装的rpm包)
+```
+#yum list extras
+```
+  - 列出资源库中所有可以安装或更新的rpm包的信息
+```
+#yum info
+```
+  - 列出资源库中特定的可以安装或更新以及已经安装的rpm包的信息
+```
+#yum info glibc
+#yum info glibc*
+```
+  - 列出资源库中所有可以更新的rpm包的信息
+```
+#yum info updates
+```
+  - 列出已经安装的所有的rpm包的信息
+```
+#yum info installed
+```
+  - 列出已经安装的但是不包含在资源库中的rpm包的信息(通过其它网站下载安装的rpm包的信息)
+```
+#yum info extras
+```
+- 搜索rpm包 相关指令 
+
+  - 搜索匹配特定字符的rpm包(在rpm包名,包描述等中搜索)
+```
+#yum search glibc
+```
+  - 搜索包列表文件包含 realplay 的 软件包
+```
+#yum provides realplay
+```
+
+
+= Yum 软件仓库搭建方法 =
+
+	如果管理大量的服务器，rpm软件包的安装和更新,都需要访问连接Internet，这样会导致安装软件包的速度会很慢,而且会浪费带宽.
+	为了避免上述情况的弊端，我们可以通过自己创建本地的repository（仓库）的方法来实现软件包的快速安装和更新.
+
+- 仓库服务器端创建,将DVD或者CD发行版中的所有数据拷贝到服务器上(以centos 5 为例)
+
+  - 创建仓库目录
+```
+mkdir /yum
+```
+  - 挂载安装介质盘
+```
+mount -o loop /download/centos5.iso /mnt
+```
+  - 复制光盘内容到/yum目录中
+```
+cp /mnt/* /yum
+```
+  - 创建repository的软件包的索引文件(需要安装 createrepo 软件包)
+```
+cd /yum
+createrepo -g repodata/comps.xml . (.代表当前目录)
+```
+  - 配置apache服务器，将DocumentRoot 指向 /yum 目录，可以列出目录内容即可(示例配置)。
+```
+DocumentRoot "/yum"
+<Directory "/yum">
+Options Indexes FollowSymLinks
+AllowOverride None
+Order allow,deny
+Allow from all
+</Directory>
+```
+ - 启动apache,测试访问正常，服务器端设置完成
+
+- 客户端设置,修改 yum 配置文件(假设服务器ip = 192.168.0.1)
+ - 修改配置文件内容/etc/yum.repos.d/centos-server.repo 内容如下
+```
+#cat /etc/yum.repos.d/centos-server.repo
+[main]
+cachedir=/var/cache/yum
+debuglevel=2
+logfile=/var/log/yum.log
+pkgpolicy=newest
+distroverpkg=redhat-release
+tolerant=1
+exactarch=1
+retries=20
+obsoletes=1
+gpgcheck=0
+
+[centos5]
+name=centos5 - Base
+baseurl=http://192.168.0.1/
+gpgcheck=0
+```
+ - 删除/etc/yum.repos.d/ 目录中 其他 .repo 文件(不使用其他的软件仓库)
+
+
+经过如上配置后，就可以使用自己建立的仓库，进行软件包的安装和更新.
+如果你需要建立很多发行版本的仓库，可以按照不同目录划分进行,参考如下目录结构
+```
+/yum
+|-- rh35-x86-32
+|   |-- headers
+|   `-- repodata
+|-- rh36-x86-32
+|   |-- headers
+|   `-- repodata
+|-- rh36-x86-64
+|   |-- headers
+|   `-- repodata
+|-- rh38-x86-32
+|   |-- headers
+|   `-- repodata
+|-- rh38-x86-64
+|   |-- headers
+|   `-- repodata
+|-- rh39-x86-32
+|   |-- headers
+|   `-- repodata
+|-- rh42-x86-32
+|   `-- repodata
+|-- rh43-x86-32
+|   `-- repodata
+|-- rh44-x86-32
+|   `-- repodata
+|-- rh44-x86-64
+|   `-- repodata
+|-- rh45-x86-64
+|-- rh46-x86-32
+|   `-- repodata
+|-- rh46-x86-64
+|   `-- repodata
+|-- rh47-x86-64
+|   `-- repodata
+|-- rh48-x86-32
+|   `-- repodata
+|-- rh48-x86-64
+|   `-- repodata
+|-- rh50-x86-32
+|   `-- repodata
+|-- rh50-x86-64
+|   `-- repodata
+|-- rh52-x86-32
+|   `-- repodata
+|-- rh52-x86-64
+|   `-- repodata
+|-- rh53-x86-32
+|   `-- repodata
+|-- rh53-x86-64
+|   `-- repodata
+|-- rh54-x86-64
+|   `-- repodata
+`-- update
+    |-- rhel3-x86-32
+    |   |-- headers
+    |   `-- repodata
+    |-- rhel3-x86-64
+    |   |-- headers
+    |   `-- repodata
+    |-- rhel4-x86-32
+    |   `-- repodata
+    |-- rhel4-x86-64
+    |   `-- repodata
+    |-- rhel5-x86-32
+    |   `-- repodata
+    |-- rhel5-x86-64
+	`-- repodata
+```
+然后根据需要，设置客户端的yum配置文件，即可使用不同的发行版本软件仓库!
+

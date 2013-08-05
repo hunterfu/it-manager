@@ -1,0 +1,325 @@
+系统管理中 bash shell 脚本常用方法总结
+bash,shell,总结,linux,summary 
+1074362d-8ea6-423f-8fb7-d9b888b6d577
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%%TOC
+
+
+在日常系统管理工作中，需要编写脚本来完成特定的功能，编写shell脚本是一个基本功了！@@
+在编写的过程中，掌握一些常用的技巧和语法就可以完成大部分功能了，也就是2/8原则.
+
+= 单引号和双引号的区别 =
+
+单引号与双引号的最大不同在于双引号仍然可以引用变量的内容，但单引号内仅是
+普通字符 ，不会作变量的引用，直接输出字符窜。请看如下例子：
+
+```
+[root@linux ~]# name=HaHa 
+[root@linux ~]# echo $name 
+HaHa 
+[root@linux ~]# myname="$name is wow" 
+[root@linux ~]# echo $myname 
+HaHa is wow 
+[root@linux ~]# myname='$name is wow' 
+[root@linux ~]# echo $myname 
+$name is wow  
+```
+从上面例子可以看出,使用了单引号的时候，那么$name只是普通字符,直接输出而已！ 
+
+
+= 逐行读取文件 =
+ - 使用for循环来读取文件
+```
+for line in `cat file.txt`
+do
+	echo $line
+done
+```
+	注意:由于使用for来读入文件里的行时，会自动把空格和换行符作为一样分隔符，如果行里有空格的时候，输出的结果会很乱，所以只适用于行连续不能有空格或者换行符的文件
+
+ - 使用while循环读取文件
+```
+cat file.txt |while read line
+do
+	echo $line
+done
+
+或者：
+
+while read line
+do
+	echo $line
+done < file.txt
+```
+	注意:由于使用while来读入文件里的行时，会整行读入，不会关注行的内容(空格..)，所以比for读文件有更好的适用性，推荐使用while循环读取文件
+
+
+= bash shell 脚本中常用隐含变量 =
+
+| $0 | 当前执行的脚本或者命令名称 | 
+| $1-$9 | 代表参数的位置. 举例 $1 代表第一个参数. |
+| $#  | 脚本调用的参数的个数 |
+| $@  | 所有参数的内容 |
+| $* | 所有参数的内容 |
+| $$ | 当前运行脚本的进程号 |
+| $? | 命令执行后返回的状态 |
+| $! | 后台运行的最后一个进程号 |
+
+	注意: 
+	$? 用于检查上一个命令执行是否正确(在Linux中，命令退出状态为0表示该命令正确执行，任何非0值表示命令出错) @@
+	$$ 变量最常见的用途是用做暂存文件的名字以保证暂存文件不会重复。 @@
+	$* 和 $@ 如果输出是一样的，但是在使用for循环，在使用 双引号("")引用时 "$*" 会输出成一个元素 而 "$@" 会按照每个参数是一个元素方式输出 
+请看测试例子
+```
+#cat test.sh 
+#!/bin/sh
+echo '"$@" output.....'
+for i in "$@"
+do
+	echo $i
+done
+echo '"$*" output ....'
+for i in "$*"
+do
+	    echo $i
+done
+```
+输出结果
+```
+#sh test.sh a b c d
+"$@" output.....
+a
+b
+c
+d
+"$*" output ....
+a b c d
+```
+	从输出结果可以看出 "$*" 输出是一行 而 "$@" 输出则是四行
+
+
+= 变量内容的删除与替换 =
+
+我们在一些情况下，需要对变量中的字符窜进行查找删除或者替换，就需要使用下表列出的方法
+
+|| 变量设定方式 | 说明 |
+| ${变量#关键字} | 若变量内容从头开始的资料符合‘关键字’，则将符合的最短资料删除 |
+| ${变量##关键字} | 若变量内容从头开始的资料符合‘关键字’，则将符合的最长资料删除 |
+| ${变量%关键字} | 若变量内容从尾向前的资料符合‘关键字’，则将符合的最短资料删除 |
+| ${变量%%关键字} | 若变量内容从尾向前的资料符合‘关键字’，则将符合的最长资料删除 |
+| ${变量/旧字串/新字串} | 若变量内容符合‘旧字串’则‘第一个旧字串会被新字串取代 |
+| ${变量//旧字串/新字串} | 若变量内容符合‘旧字串’则‘全部的旧字串会被新字串取代 ||
+ 
+举例如下(删除字符窜中的某个字符):
+```
+[root@linux ~]# export test_str="/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin" 
+[root@linux ~]# echo ${test_str#/*kerberos/bin:}
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+```
+
+= 变量条件测试赋值 =
+
+在某些时刻我们需要‘判断’某个变量是否存在，若变量存在则将此变量值赋值给新的变量，若变量不存在则将其他值赋值给新的变量.
+
+|| 变量设定方式 | str 未定义 | str 为空字串 | str 已赋值为非空字串 |
+| var=${str-expr} | var=expr | var= | var=$str |
+| var=${str:-expr} | var=expr | var=expr | var=$str |
+| var=${str+expr} | var= | var=expr | var=expr |
+| var=${str:+expr} | var= | var= | var=expr |
+| var=${str?expr} | expr 输出至 stderr | var= | var=$str |
+| var=${str:?expr} | expr 输出至 stderr | expr 输出至 stderr | var=$str |
+| var=${str=expr} | var=expr | var= | var=$str |
+| var=${str:=expr} | var=expr | var=expr | var=$str ||
+
+举例如下:
+```
+[root@linux ~]# test_name=""
+[root@linux ~]# test_name=${test_name-root}
+[root@linux ~]# echo $test_name
+      <== 因为 test_name 被设定为空字符窜！所以当然还是保留为空字符窜！
+[root@linux ~]# test_name=${test_name:-root}
+[root@linux ~]# echo $test_name
+root  <== 加上‘:’后若变量内容为空或者是未设定，都能够以后面的内容替换！
+```
+
+	基本上这种变量的测试也能够透过 shell script 内的 if...then... 来处理,不过通过上述提及的简单的方法来测试变量，是程序看起来更精简一些！
+
+= shell 中分隔符 : 变量IFS 使用 =
+
+shell脚本中，如果使用for循环一个字符窜的话，默认使用空格来分割字符窜.
+还有前面所提到的 使用for循环逐行读取文件内容时候,文件行中如果有空格的话输出的结果也会变乱.
+这个时候 使用 IFS 变量来设置特定的字符窜分割符来，达到输出正确的目的.
+默认情况下 IFS 是使用 **<space><tab><newline>**， 空格 \t \n 来作为默认的分割符的.
+
+我们将前面使用for逐行读取文件的例子 改进下就可以输出正确了,请看下面
+
+```
+#!/bin/bash
+IFS_old=$IFS      #将原IFS值保存，以便用完后恢复
+IFS=$’\n’         #更改IFS值为$’\n’
+for line in `cat file.txt`
+do
+	echo $line
+done
+```
+
+file.txt 文件内容如下
+```
+[root@linux]$ cat file.txt 
+sdfsdfsdfsdf
+ssssss ssssss ssssss sssss
+sdfsdfsdfsdfsdf
+```
+
+执行测试程序 输出结果如下(正确输出)
+```
+[root@linux]$ sh test.sh 
+sdfsdfsdfsdf
+ssssss ssssss ssssss sssss
+sdfsdfsdfsdfsdf
+```
+如果未设置IFS变量,使用默认的IFS变量值 ,输出结果如下
+```
+[root@linux]$ sh test.sh 
+sdfsdfsdfsdf
+ssssss
+ssssss
+ssssss
+sssss
+sdfsdfsdfsdfsdf
+```
+
+从以上测试程序输出结果,可以根据自己的需求来设定 IFS变量,在举一个例子如下:
+```
+while IFS=: read userName passWord userID groupID geCos homeDir userShell
+do
+      echo "$userName -> $homeDir"
+done < /etc/passwd
+```
+
+= shell 数组的使用 =
+
+数组赋值方式:
+
+```
+(1) array=(var1 var2 var3 ... varN)
+(2) array=([0]=var1 [1]=var2 [2]=var3 ... [n]=varN)
+(3) array[0]=var1
+    arrya[1]=var2
+    ...
+    array[n]=varN
+```
+
+计算数组元素个数或者长度:
+```
+(1) ${#array[@]}    
+(2) ${#array[*]}
+```
+
+了解了数组基础语法，举例说明，请看:
+
+```
+#!/bin/bash
+NAMESERVERS=("ns1.www.net." "ns2.www.net." "ns3.www.net.")
+# 得到数组长度
+tLen=${#NAMESERVERS[@]}
+ 
+# 循环数组
+for (( i=0; i<${tLen}; i++ ));
+do
+  echo ${NAMESERVERS[$i]}
+done
+```
+
+在看一个复杂一点的例子,将文件内容读取到数组中:
+```
+#!/bin/bash
+
+# 设置IFS将分割符 设置为 换行符(\n)
+OLDIFS=$IFS
+IFS=$'\n' 
+ 
+# 读取文件内容到数组
+fileArray=($(cat file.txt))
+ 
+# restore it
+IFS=$OLDIFS
+tLen=${#fileArray[@]}
+ 
+# 循环显示文件内容
+for (( i=0; i<${tLen}; i++ ));
+do
+  echo "${fileArray[$i]}"
+done
+```
+
+= 逻辑判断 条件测试 =
+
+- 文件属性的判断
+
+|| 操作符 | 测试结果 |
+| -e filename | 文件存在返回1， 否则返回0 |
+| -r filename | 文件可读返回1,否则返回0 |
+| -w filename | 文件可写返回1,否则返回0 |
+| -x filename | 文件可执行返回1,否则返回0 |
+| -o filename | 文件属于用户本人返回1, 否则返回0 |
+| -z filename | 文件长度为0返回1, 否则返回0 |
+| -f filename | 文件为普通文件返回1, 否则返回0 |
+| -d filename | 文件为目录文件时返回1, 否则返回0 ||
+
+举例如下,测试文件是否存在:
+```
+#!/bin/bash
+echo "checks the existence of the messages file."
+echo -n "Checking..."
+if [ -f /var/log/messages ];then
+    echo "/var/log/messages exists."
+fi
+echo
+echo "...done."
+```
+- 字符串比较 
+
+|| 操作符 | 比较结果 |
+| str1 = str2 | 当两个字串相等时为真 |
+| str1 != str2 | 当两个字串不等时为真 |
+| -n str1 | 当字符串的长度大于0时为真 |
+| -z str1 | 当字符串的长度为0时为真 |
+| str | 当字符串为非空时为真 ||
+
+举例如下,比较字符串来测试用户ID :
+```
+if [ "$(whoami)" != 'root' ]; then
+        echo "You have no permission to run $0 as non-root user."
+        exit 1;
+fi
+```
+
+- 数值比较(整数) 
+
+|| 操作符 | 比较结果 |
+| num1 -eq num2 | 两数相等为真 |
+| num1 -ne num2 | 两数不等为真 |
+| num1 -gt num2 | num1大于num2为真 |
+| num1 -ge num2 | num1大于等于num2为真 |
+| num1 -lt num2 | num1小于num2为真 |
+| num1 -le num2 | num1小于等于num2为真 ||
+
+举例如下:
+```
+num=`wc -l work.txt`
+if [ $num -gt 150 ];then
+	echo "you've worked hard enough for today."
+	echo
+fi
+```
+如果要查看详细的测试操作,可以查看man手册 man test
+
+

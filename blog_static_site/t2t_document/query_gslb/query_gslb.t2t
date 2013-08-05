@@ -1,0 +1,62 @@
+各国dns域名查询CGI程序 
+Author :Hunter Fu<fuhualgd@qq.com>
+最后更新时间: %%mtime(%Y-%m-%d %H:%M)
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%%TOC
+
+= 程序用途说明 =
+	此程序主要是用来查看各国域名解析情况，检查各国dns返回的ip地址.
+	如果网站有多个站点(比如cdn,或者镜像站点),需要通过dns来调度用户访问那个站点，这时就需要通过此程序来检查dns返回的ip地址是否是预期的!
+	
+
+= 程序运行环境 =
+
+- APACHE 支持cgi 即可
+- 系统常用命令 sed,cat等
+- Bash shell 支持，CGI使用 SHELL 脚本完成
+
+
+= 程序安装方法 =
+
+- 从此处下载[domain-1.0.tgz SITE_URL:/download/domain-1.0.tgz] 程序包
+- 将软件包解压到某一目录中
+```
+tar xzvf domain-1.0.tgz
+```
+- 进入程序根目录,并执行命令 
+```
+cd domain-1.0
+cp -r cgi-bin/* /var/www/cgi-bin/	#cgi 程序
+cp -r htdocs/* /var/www/html/		#cgi 使用的模板文件 
+```
+	注意：如果您的apache 的默认目录和上例子不一样，请作相应的更改
+	
+- 修改dns.cgi,找到开头的这行,改成您的apache的htdocs目录
+```
+Htdoc_Dir="/var/www/html"   #改成您的apache的htdocs 目录
+```
+
+
+= 程序使用 =
+
+	通过 http://server_ip/cgi-bin/dns.cgi 就可以使用了(server_ip 换成您的服务器ip即可)
+	
+= 程序截图 (ScreenShot) =
+
+默认初始查询页面 @@
+[query_form.png]
+@@ 查询结果页面1 @@
+[query_result2.png]
+@@ 查询结果页面2 @@
+[query_result.png]
+
+----------------------------------------------------------
+有任何问题 请回复评论!会在第一时间联系!
+

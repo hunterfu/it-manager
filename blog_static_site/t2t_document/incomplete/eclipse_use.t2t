@@ -1,0 +1,62 @@
+eclipse ide 基础使用技巧 
+eclipse,tips,java,ide,linux
+dc43e43d-febb-43e6-a4d2-89358a4d215e
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(html): @@ <BR>
+%%TOC
+
+
+在使用eclipse过程中，有些常用的设置和技巧可以提高效率,下面就对一些常用进行总结！@@
+以下所有设置都是在 fedora 16 ,eclipse 3.7.x 版本设置的，其他系统和版本请酌情参考!
+
+
+= 更改eclipse语言 = 
+
+在使用过程中，有时候需要设置eclipse界面使用的语言,比如中文或者英文
+
+- 方法一 : 修改 **/etc/eclipse.ini** 配置文件，文件末加入如下配置 
+```
+-Duser.language=en
+```
+
+- 方法二 : 修改应用启动快捷方式配置文件 **/usr/share/applications/eclipse.desktop** 中的 **Exec=eclipse** 行,加入语言设置参数
+
+ - 英文 --->  -nl en_US    
+ - 繁体 --->  -nl zh_TW   
+ - 简体 --->  -nl zh_CN
+
+ - 示例配置如下，界面将会是英文
+```
+cat /usr/share/applications/eclipse.desktop
+[Desktop Entry]
+Type=Application
+Name=Eclipse
+Comment=Eclipse Integrated Development Environment
+Icon=eclipse
+Exec=eclipse -nl en_US
+Terminal=false
+Categories=Development;IDE;Java;
+```
+
+
+= 开发过程中常用快捷键 =
+
+- Ctrl + Shift + O :引入及管理imports语句 
+- Ctrl + Shift + T : 打开Open Type 查找类文件 
+- Ctrl + Shift + F4 : 关闭所在打开的窗口 
+- Ctrl + O : Open declarations 
+- Ctrl + E : 打开编辑器（切换窗口） 
+- Ctrl + / : 注释本行或取消注释 
+- Ctrl + D : 删除本行 
+- Ctrl + Shift + F : 格式化代码 
+- Alt + Shift + J : 给函数添加doc注释
+- Ctrl + Shift + R : 按文件名称搜索

@@ -1,0 +1,155 @@
+android 开发初学指南
+Author :Hunter <hunterfu2009@gmail.com>
+最后更新时间: %%mtime(%Y-%m-%d %H:%M)
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%%TOC
+
+
+
+= 开发环境搭建(fedora 12 以上) =
+ 
+
+
+ 
+= APK软件包结构 =
+ 
+== APK软件包目录结构(最简单的) ==
+
+```
+|-- AndroidManifest.xml
+|-- res
+|   |-- drawable
+|   |-- layout
+|   `-- values
+`-- src
+```
+
+说明: 文件目录结构中 src,res,AndroidManifest.xml 在同一级别.
+src 目录存放主程序文
+res 目录存放资源文件(Resource Files)
+ - drawable 存放程序中用到的图片图标等资源
+ - layout 存放布局文件,界面如何够成
+ - values 存放布局文件中引用到常数
+
+== 代码说明以Hello World程序为例 ==
+
+下面我们来看看 "HelloWorld.java" 程序代码如下:
+
+```
+package com.exampe.helloworld;
+import android.app.Activity;
+import android.os.Bundle;
+public class HelloWorld extends Activity {
+  /** Called when the activity is first created. */
+  @Override
+  public void onCreate(Bundle icicle) {
+    super.onCreate(icicle);
+    setContentView(R.layout.main);
+  }
+}
+```
+
+HelloWorld类继承自Activity类，Activity类 是可视，交互式应用的前端展现基础类 @@
+在类中重写了onCreate() 方法，在方法内以setContentView() 来设置这个Acvitity要显示的布局（R.layout.main）@@
+布局配置文件在  "res/layout/main.xml"，布局文件是以XML格式编写的，内容如下：
+
+``
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  >
+  <TextView 
+    **android:id="@+id/myTextView"**
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/hello"
+  />
+</LinearLayout>
+``
+
+布局配置中设置了一个TextView，用以配置文本标签Widget，内部设置属性 android:id 指定UI 元素的ID，以后可以方便的通过 findViewById 来引用,例如
+```
+TextView refTextView = (TextView)findViewById(R.id.myTextView);
+```
+当然你也可以使用代码来创建界面.
+
+
+内部设置的 **android:text** 属性，则是要显示的文字内容，引用“@string”里的hello字符串常数@@
+常数定义配置文件在 "res/values/strings.xml " 字符串常数设置如下：
+```
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="hello">Hello World, HelloWorld</string>
+  <string name="app_name">HelloWorld</string>
+</resources>
+```
+其中“hello”字符串变量的值为“Hello World, HelloWorld”.当然如果简单的汉化工作也可以修改此strings.xml 文件.
+
+
+== AndroidManifest.xml 文件说明 ==
+
+每一个项目都有一个 **AndroidManifest.xml** 设置文件，里头包含这个Android应用程序具有哪些Activity、Service或者Receiver@@
+先来看看Hello World制作好的“AndroidManifest.xml”设置文件的内容描述：
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.exampe.helloworld"
+  android:versionCode="1"
+  android:versionName="1.0.0">
+  <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <activity
+      android:name=".HelloWorld"
+      android:label="@string/app_name">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
+```
+
+在manifest文件中有一个名为HelloWorld的Activity，设置其intent-filter的category android:name为"android.intent.category.LAUNCHER"，写在intent-filter里是指定此
+Activity为默认运行的主要Activity，除了在manifest文件中手动设置之外，也可在Eclipse右击项目名称，运行“Run As—Run Configurations”，设置Launch Action。
+Activity类的应用程序有其默认运行的方式，为了确保应用程序运行的优先级，理解Activity在手机运行时的生命周期，及其可视性（Visible）周期。
+ 
+
+= 开发学习过程中的问题及解决方法 =
+
+== 申请 android google map API key ==
+
+- 确认你的debug keystore位置：打开Eclipse--->Windows--->Preferences--->Android--->Build
+
+- 在命令行执行: (可以先定位到jdk的bin目录下)
+```
+[root@local]$ keytool -list -alias androiddebugkey -keystore ~/.android/debug.keystore -storepass android -keypass android
+androiddebugkey, 2010-6-3, PrivateKeyEntry, 
+认证指纹 (MD5)： xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx
+```
+这里的XX:XX:XX:XX:XX:XX:XX:XX.............就是你的认证指纹
+
+- 打开http://code.google.com/intl/zh-CN/android/maps-api-signup.html,按照提示操作即可
+
+- 使用得到的apiKey: 在layout中加入MapView
+```
+<com.google.android.maps.MapView
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:apiKey="0v6EgSubGYoIZ80qgV7E3G6f5MBErQI-ysyMQMw"
+  />
+```
+ 
+

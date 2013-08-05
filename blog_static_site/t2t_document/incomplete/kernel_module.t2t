@@ -1,0 +1,66 @@
+Linux内核模块自动加载机制
+Author :Hunter Fu<hunterfu2009@gmail.com>
+最后更新时间: %%mtime(%Y-%m-%d %H:%M)
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%%TOC
+
+
+= linux 基础知识 =
+
+
+
+ 
+标题http://www.osplay.org/modules/article/view.article.php?7
+
+   1. 思考
+
+如果想让内核启动过程中自动加载某个模块该怎么做呢？最容易想到的方法就是到/etc/init.d/中添加一个启动脚本，然后在/etc/rcN.d/目录下创建一个符号链接，这个链接的名字以S开头，这内核启动时，就会自动运行这个脚本了，这样就可以在脚本中使用modprobe来实现自动加载。但是我们发现，内核中加载了许多硬件设备的驱动，而搜索/etc目录，却没有发现任何脚本负责加载这些硬件设备驱动程序的模块。那么这些模块又是如何被加载的呢？
+
+    *
+
+      每一个设备都有Verdon ID, Device ID, SubVendor ID等信息。而每一个设备驱动程序，必须说明自己能够为哪些Verdon ID, Deviece
+
+ID, SubVendor ID的设备提供服务。以PCI设备为例，它是通过一个pci_device_id的数据结构来实现这个功能的。例如：RTL8139的pci_device_id定义为：
+
+static struct pci_device_id rtl8139_pci_tbl[] = {
+        {0x10ec, 0x8139, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
+        {0x10ec, 0x8138, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
+        ......
+}
+MODULE_DEVICE_TABLE (pci, rtl8139_pci_tbl);
+
+上面的信息说明，凡是Verdon ID为0x10EC, Device ID为0x8139, 0x8138的PCI设备(SubVendor ID和SubDeviceID为PCI_ANY_ID，表示不限制。)，都可以使用这个驱动程序(8139too)。
+
+    *
+
+      在模块安装的时候，depmod会根据模块中的rtl8139_pci_tbl的信息，生成下面的信息，保存到/lib/modules/uname-r/modules.alias文件中，其内容如下：
+
+alias pci:v000010ECd00008138sv*sd*bc*sc*i* 8139too
+alias pci:v000010ECd00008139sv*sd*bc*sc*i* 8139too
+......
+
+v后面的000010EC说明其Vendor ID为10EC，d后面的00008138说明Device ID为8139，而sv,和sd为SubVendor ID和SubDevice ID，后面的星号表示任意匹配。
+
+另外在/lib/modules/uname-r/modules.dep文件中还保存这模块之间的依赖关系，其内容如下：
+
+(这里省去了路径信息。)
+8139too.ko:mii.ko
+
+    *
+
+      在内核启动过程中，总线驱动程序会会总线协议进行总线枚举(总线驱动程序总是集成在内核之中，不能够按模块方式加载，你可以通过make menuconfig进入Bus
+
+options，这里面的各种总线，你只能够选择Y或N，而不能选择M.)，并且为每一个设备建立一个设备对象。每一个总线对象有一个kset对象，每一个设备对象嵌入了一个kobject对象，kobject连接在kset对象上，这样总线和总线之间，总线和设备设备之间就组织成一颗树状结构。当总线驱动程序为扫描到的设备建立设备对象时，会初始化kobject对象，并把它连接到设备树中，同时会调用kobject_uevent()把这个(添加新设备的)事件，以及相关信息(包括设备的VendorID,DeviceID等信息。)通过netlink发送到用户态中。在用户态的udevd检测到这个事件，就可以根据这些信息，打开/lib/modules/uname-r/modules.alias文件，根据
+
+alias pci:v000010ECd00008138sv*sd*bc*sc*i* 8139too
+
+得知这个新扫描到的设备驱动模块为8139too。于是modprobe就知道要加载8139too这个模块了，同时modprobe根据 modules.dep文件发现，8139too依赖于mii.ko，如果mii.ko没有加载，modprobe就先加载mii.ko，接着再加载 8139too.ko。 

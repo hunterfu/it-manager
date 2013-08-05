@@ -1,0 +1,84 @@
+rpm 包管理器常用用法总结
+rpm,rpm2cpio,cpio,rpmdb,rpm数据库修复
+8a4a98ae-5137-449c-bcfd-e482562f82e0
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%%TOC
+
+rpm是很多linux发行版使用的包管理器,这里将简单总结下常用方法
+
+
+= 使用rpm2cpio,cpio提取rpm包的中的特定文件 =
+
+有些时候，我们需要提取rpm包中的一些文件，通过如下方法可以快速提取
+ 
+- 首先查询rpm包中的文件
+```
+[root@taotips ~]# rpm -qpl anaconda-11.4.1.62-1.src.rpm 
+anaconda-11.4.1.62.tar.bz2
+anaconda.spec
+```
+
+- 我们需要提取 anaconda-11.4.1.62.tar.bz2 这个文件,执行下面的命令,提取到当前目录
+```
+rpm2cpio anaconda-11.4.1.62-1.src.rpm | cpio -idv anaconda-11.4.1.62.tar.bz2
+```
+**注意:** cpio参数后的文件路径 "anaconda-11.4.1.62.tar.bz2" 必须和前面查询的相对路径一样，否则提取不成功。
+
+- 相关知识说明
+	cpio参数说明：@@
+	  -t  列出的意思，和"--list"等同，注意，此时列出的是“相对路径”@@
+	  -i  抽取的意思，和"--extract"等同@@
+	  -d  建立目录，和"--make-directories"等同@@
+	  -v  冗余信息输出，和"--verbose"等同@@
+		
+	rpm参数说明：@@
+	  -q  --query 查询@@
+	  -l  --list 列出@@
+	  -f  --file 指定文件@@
+	  -p --package 指定rpm包
+
+
+= rpm 数据库修复的方法 =
+
+- 第一种方法:
+
+当进行包安装、升级、卸载等操作时，可能损坏RPM DB，需要通过--rebuild参数来修复RPM DB，但有时会碰到这样的问题：
+
+```
+[root@taotips lib]# rpm -v --rebuilddb
+rpmdb: fatal region error detected; run recovery
+error: db4 error(-30982) from dbenv->open: DB_RUNRECOVERY: Fatal error, run database recovery
+error: cannot open Packages index
+```
+
+此时需要手动删除/var/lib/rpm目录下的类似 __db.* 的文件
+
+```
+rm -fr /var/lib/rpm/__db*
+```
+
+然后再运行 rpm -v --rebuilddb 即可.
+
+- 第二中方法 :
+
+```
+# cd /var/lib
+# mv rpm rpm.old
+# mkdir rpm
+# rpmdb --initdb
+# cp rpm.old/Packages rpm
+# rpmdb --rebuilddb
+```
+
+
+以上2中方法都可以修复rpm db,请参考使用!
+
+

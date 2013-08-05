@@ -1,0 +1,74 @@
+在usb盘上安装grub引导程序
+grub,usb,boot,syslinux,grub-install,引导
+066615af-d181-465d-b30d-d8ff440d548a
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!preproc: SITE_URL http://www.51know.info/
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%%TOC
+
+
+许多发行版本都支持usb启动，那我们自己可不可以作一个usb启动的工具盘呢，答案是肯定的!
+
+
+首先作以下假定 
+- usb 设备是 /dev/sdb
+- usb盘挂载点  /mnt/usbdisk
+
+
+
+下面我们就简单说下 grub 引导器安装到usb盘上的步骤
+
+- 确定usb 盘的位置, 一般为 /dev/sdb 
+```
+[root@localhost]# fdisk -l
+```
+
+- 使用以下命令清除mbr引导字节
+```
+[root@localhost]# dd if=/dev/zero of=/dev/sdb bs=512 count=1
+```
+
+- 使用 syslinux 中的 mbr.bin 加载到usb盘上
+```
+[root@localhost]# locate mbr.bin
+[root@localhost]# cat /somepath/share/syslinux/mbr.bin > /dev/sdb
+```
+
+- 使用fdisk对usb盘进行分区, 类似结果如下 : 
+```
+   Device Boot      Start         End      Blocks   Id  System
+   /dev/sdb1   *           1        1018      993537+  83  Linux
+```
+
+- 在分区上创建ext3文件系统,并且挂在usb盘
+```
+[root@localhost]# mkfs.ext3 /dev/sdb1
+[root@localhost]# mkdir -p /mnt/usbdisk
+[root@localhost]# mount /dev/sdb1 /mnt/usbdisk
+```
+
+- 安装GRUB boot loader到usb盘上 
+```
+[root@localhost]# grub-install  --no-floppy  --root-directory=/mnt/usbdisk   /dev/sdb  
+```
+
+- 创建grub.conf配置文件  
+```
+[root@localhost]# 
+cat > /mnt/usbdisk/boot/grub/grub.conf << EOF
+title           Usb linux
+root            (hd0,0)
+kernel          /boot/kernel-xxxx root=/dev/sda1 ro
+initrd          /boot/initrd-xxxx.img
+EOF
+```
+
+- 将kernel和initrd 拷贝到usb盘上，重启系统，就可以引导系统了.
+
+

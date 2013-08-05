@@ -1,0 +1,52 @@
+linux 命令行下http相关操作总结
+wget,curl,encode,decode,post,get,http
+40d41e47-8bf6-499b-9f0c-6ae350a41343
+
+
+%!Target  : html
+%!Encoding: utf-8
+%!Options : --toc --enum-title
+%!preproc: IMGPATH .
+%!postproc(html): @@ <BR>
+%!postproc(xhtml): @@ <BR>
+%!postproc(wiki): @@ <BR>
+%!postproc(html): @@ <BR>
+%%TOC
+
+
+在日常系统管理工作中，需要访问一些HTTP的服务(比如api接口),可能就需要使用curl,wget等工具@@
+在日常使用过程中，有些常用的方法和注意事项在这里总结下，希望对大家有用.
+
+= url 编码 =
+
+在访问http服务的时候，我们所要传递的参数中有些特殊字符，这就需要进行urlencode编码.
+
+- 使用 perl 进行url编码
+```
+[root@hunterfu ~]# url="Dfv+uXv6xevBNhKO+1hEt10lo8edfyKI96EGGudU1+cJ2lX3Ir4Oiy7BD5bfhEMNMp0Zdys/6KsaTMY3fbA="
+[root@hunterfu ~]# url_encoded="$(perl -MURI::Escape -e 'print uri_escape($ARGV[0]);' "$url")"
+[root@hunterfu ~]$ echo $url_encoded
+Dfv%2BuXv6xevBNhKO%2B1hEt10lo8edfyKI96EGGudU1%2BcJ2lX3Ir4Oiy7BD5bfhEMNMp0Zdys%2F6KsaTMY3fbA%3D
+```
+- 使用 python 进行url编码
+```
+[root@hunterfu ~]# url="Dfv+uXv6xevBNhKO+1hEt10lo8edfyKI96EGGudU1+cJ2lX3Ir4Oiy7BD5bfhEMNMp0Zdys/6KsaTMY3fbA="
+[root@hunterfu ~]# url_encoded=$(python -c "import urllib; print urllib.quote('''$url''')")
+[root@hunterfu ~]# echo $url_encoded
+Dfv%2BuXv6xevBNhKO%2B1hEt10lo8edfyKI96EGGudU1%2BcJ2lX3Ir4Oiy7BD5bfhEMNMp0Zdys/6KsaTMY3fbA%3D
+```
+- 使用 php 进行url编码
+```
+[root@hunterfu ~]# url="Dfv+uXv6xevBNhKO+1hEt10lo8edfyKI96EGGudU1+cJ2lX3Ir4Oiy7BD5bfhEMNMp0Zdys/6KsaTMY3fbA="
+[root@hunterfu ~]# url_encoded=$(php -r "echo rawurlencode('$url');")
+[root@hunterfu ~]# echo $url_encoded
+Dfv%2BuXv6xevBNhKO%2B1hEt10lo8edfyKI96EGGudU1%2BcJ2lX3Ir4Oiy7BD5bfhEMNMp0Zdys%2F6KsaTMY3fbA%3D
+```
+
+
+= 下载文件 =
+
+= 上传文件 =
+
+
+

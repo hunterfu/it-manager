@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+<meta name="Description" content="网站运维,System Admin,web farm,linux 系统管理">
+<meta name="Keywords" content="system admin, dba, 网站运维,apache,lvs,svn,linux">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Author" content="北方人 - hunterfu2009 (a) gmail com - 运维之道">
+
+<link rel="stylesheet" href="/css_image/default.css" type="text/css">
+<link rel="stylesheet" href="/css_image/website.css" type="text/css">
+<script type="text/javascript" src="/css_image/jquery-1.js"></script>
+<script type="text/javascript" src="/css_image/jquery.js"></script>
+<script type="text/javascript" src="/css_image/jquery.magnifier.js"></script> 
+
+<title>运维之道 - 留言簿</title>
+
+  </head><body>
+
+  <!-- header starts here -->
+  <div id="header"><div id="header-content">
+
+          <!-- <img id="logo-image" src="css_image/webgen_logo.png" alt="运维之道"> -->
+  <h1 id="logo">运维之道</h1>
+  <h2 id="slogan">道,可道,非常道 名,可名,非常名</h2>
+
+  <!-- Menu Tabs -->
+  <ul>
+  <li class="webgen-menu-level1"><a href="index.html">首页</a></li>
+  <TMPL_LOOP Menuitem>
+  <li class="webgen-menu-level1"><a href="<TMPL_VAR menu_href>"><TMPL_VAR menu_name></a></li>
+  </TMPL_LOOP>
+  <li class="webgen-menu-level1 webgen-menu-item-selected"><a href="guestbook.html">欢迎留言</a></li>
+  </ul>
+
+  </div> </div>
+
+    <!-- content-wrap starts here -->
+    <div id="content-wrap">
+        <div id="content">
+<div id="sidebar">
+</div>
+
+<!-- txt2tag create static site -->
+      <div id="main">
+        <h2 align=center> 雁过留毛，人过留抓，欢迎留言</h2>
+    <!-- comment start -->
+    <br>
+    <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'hunterfu'; // required: replace example with your forum shortname
+
+    // The following are highly recommended additional parameters. Remove the slashes in front to use.
+    var disqus_identifier = 'bcc9ad67-ce1c-4260-a63a-7cf9c91b941b';
+    var disqus_url = "/guestbook.html";
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<!-- end comment -->
+
+      </div>
+<!-- end txt2tag static site -->
+
+      <!-- content-wrap ends here -->
+    </div></div>
+
+<!-- footer starts here -->
+<div id="footer"><div id="footer-content">
+
+ 
+
+  <div class="col float-left">
+    <h2>关于作者</h2>
+    <p>网名: 北方人(HunterFu)，目前从事网站运维与系统管理工作,
+        关注linux平台下的开源方案，目标是能够将开源方案转化为真正的生产力.
+        希望可以给初学者以合适引导,能够给想学习网站运维和系统管理的同学提供帮助.
+    </p> 
+
+  </div>
+    
+  <div class="col2 float-right">
+    <p>
+      本站关注大型网站、门户网站相关的企业应用. 包括网站架构，运维，管理等,欢迎大家交流!
+    </p>
+    <p>
+      Copyright © 2009-2011 51know.info 
+      Powered by <a href="http://www.python.org/">Python</a> & <a href="http://txt2tags.sourceforge.net/">txt2tags</a><br>
+      本站文章使用 txt2tags 编写,通过python程序自动转换成静态网页<br>
+      Valid <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> |
+      <a href="http://validator.w3.org/check/referer">XHTML</a> |  <a href="/index.html">首页</a>
+    </p>
+
+
+  </div>
+
+</div></div>
+<!-- footer ends here -->
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17310080-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<!-- end of StatCounter Code -->
+
+</body></html>

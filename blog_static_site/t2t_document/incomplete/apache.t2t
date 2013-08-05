@@ -1,0 +1,35 @@
+Apache Server目录设置参数之AllowOverride详解
+
+通常Apache虚拟主机用户需要使用rewrite模块对 URL 进行重写的时候， rewrite规则会写在 .htaccess 文件里。但要使 apache 能够正常的读取.htaccess 文件的内容，就必须对.htaccess 所在目录进行配置。从安全性考虑，根目录的AllowOverride属性一般都配置成不允许任何Override ，即
+< Directory />
+AllowOverride None
+< /Directory>
+
+在 AllowOverride 设置为 None 时， .htaccess 文件将被完全忽略。当此指令设置为 All 时，所有具有 “.htaccess” 作用域的指令都允许出现在 .htaccess 文件中。
+
+而对于 URL rewrite 来说，至少需要把目录设置为
+< Directory /userhome/>
+AllowOverride FileInfo
+< /Directory>
+
+AllowOverride的参数：
+
+AuthConfig
+允许使用与认证授权相关的指令(AuthDBMGroupFile, AuthDBMUserFile, AuthGroupFile, AuthName, AuthType, AuthUserFile, Require, 等)。
+
+FileInfo
+允许使用控制文档类型的指令(DefaultType, ErrorDocument, ForceType, LanguagePriority, SetHandler, SetInputFilter, SetOutputFilter, mod_mime中的 Add* 和 Remove* 指令等等)、控制文档元数据的指令(Header, RequestHeader, SetEnvIf, SetEnvIfNoCase, BrowserMatch, CookieExpires, CookieDomain, CookieStyle, CookieTracking, CookieName)、mod_rewrite中的指令(RewriteEngine, RewriteOptions, RewriteBase, RewriteCond, RewriteRule)和mod_actions中的Action指令。
+
+Indexes
+允许使用控制目录索引的指令(AddDescription, AddIcon, AddIconByEncoding, AddIconByType, DefaultIcon, DirectoryIndex, FancyIndexing, HeaderName, IndexIgnore, IndexOptions, ReadmeName, 等)。
+
+Limit
+允许使用控制主机访问的指令(Allow, Deny, Order)。
+
+Options[=Option,...]
+允许使用控制指定目录功能的指令(Options和XBitHack)。可以在等号后面附加一个逗号分隔的(无空格的)Options选项列表，用来控制允许Options指令使用哪些选项。
+
+举例如下
+
+AllowOverride AuthConfig Indexes
+

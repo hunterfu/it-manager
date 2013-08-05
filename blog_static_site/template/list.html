@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+<meta name="Description" content="网站运维,System Admin,web farm,linux 系统管理">
+<meta name="Keywords" content="system admin, dba, 网站运维,apache,lvs,svn,linux">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Author" content="北方人 - hunterfu2009 (a) gmail com - 运维之道">
+
+<link rel="stylesheet" href="/css_image/default.css" type="text/css">
+<link rel="stylesheet" href="/css_image/website.css" type="text/css">
+<script type="text/javascript" src="/css_image/jquery-1.js"></script>
+<script type="text/javascript" src="/css_image/jquery.js"></script>
+
+<title><TMPL_VAR title> | 运维之道</title>
+
+  </head><body>
+
+  <!-- header starts here -->
+  <div id="header"><div id="header-content">
+    
+          <!-- <img id="logo-image" src="css_image/webgen_logo.png" alt="运维之道"> -->
+  <h1 id="logo">运维之道</h1>
+  <h2 id="slogan">道,可道,非常道 名,可名,非常名</h2>
+
+  <!-- Menu Tabs -->
+  <ul>
+  <li class="webgen-menu-level1"><a href="/index.html">首页</a></li>
+  <TMPL_LOOP Menuitem>
+  <li class="webgen-menu-level1 <TMPL_VAR menu_class>"><a href="<TMPL_VAR menu_href>"><TMPL_VAR menu_name></a></li>
+  </TMPL_LOOP>
+  <li class="webgen-menu-level1"><a href="/guestbook.html">欢迎留言</a></li>
+  </ul>
+
+  </div> </div>
+
+    <!-- content-wrap starts here -->
+    <div id="content-wrap"><div id="content">
+
+      <div id="sidebar">
+
+		<h1>随机文章展示</h1>
+        <ul>  
+        	<TMPL_LOOP Randomarticles>  
+        	<li class="webgen-menu-level1"><a href="<TMPL_VAR article_href>"><TMPL_VAR article_name></a></li>
+        	</TMPL_LOOP>
+        </ul>
+
+        <h1>问答区</h1>
+        <p>
+        如果您对文章和网站有好的意见或者建议,或者有关于网站架构，运维，管理等方面的知识交流
+        <b><a href="/guestbook.html" style="color:#FCFFF5;">欢迎留言</a></b>
+        </p>
+
+		<!--
+        <h1>支持 运维之道</h1>
+        <p></p>
+		-->
+     </div>
+
+<!-- txt2tag create static site -->
+      <div id="main">
+	   <TMPL_LOOP Article_list>  
+        	<h1><a href="<TMPL_VAR list_href>"><TMPL_VAR list_name></a></h1>
+       </TMPL_LOOP>
+      </div>
+<!-- end txt2tag static site -->
+
+      <!-- content-wrap ends here -->
+    </div></div>
+
+<!-- footer starts here -->
+<div id="footer"><div id="footer-content">
+
+  <div class="col float-left">
+    <h2>关于作者</h2>
+    <p>网名: 北方人(HunterFu)，目前从事网站运维与系统管理工作,
+        关注linux平台下的开源方案，目标是能够将开源方案转化为真正的生产力.
+        希望可以给初学者以合适引导,能够给想学习网站运维和系统管理的同学提供帮助.
+    </p> 
+
+  </div>
+    
+  <div class="col2 float-right">
+    <p>
+      本站关注大型网站、门户网站相关的企业应用. 包括网站架构，运维，管理等,欢迎大家交流!
+    </p>
+    <p>
+      Copyright © 2009-2011 51know.info 
+      Powered by <a href="http://www.python.org/">Python</a> & <a href="http://txt2tags.sourceforge.net/">txt2tags</a><br>
+      本站文章使用 txt2tags 编写,通过python程序自动转换成静态网页<br>
+      Valid <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> |
+      <a href="http://validator.w3.org/check/referer">XHTML</a> | <a href="/index.html">首页</a>
+    </p>
+
+
+  </div>
+
+</div></div>
+<!-- footer ends here -->
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17310080-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<!-- end of StatCounter Code -->
+
+</body></html>
