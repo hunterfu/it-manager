@@ -1,0 +1,105 @@
+/*
+ * tracker.css - sample CSS layout for dumpstats(), dumpretiredstats(),
+ * index_sample.php, and retired_sample.php
+ *
+ * Author: danomac
+ * Date: 12-Sep-04
+ *
+ * Use this to modify how the table looks, or copy these contents into your
+ * site's CSS layout file, and point the two scripts to it.
+ *
+ * The two functions rely on having a script file with <HEAD> tags already,
+ * so when you use the functions make sure that these definitions are somewhere
+ * within your script's scope!
+ *
+ * Copyright (C) 2004 danomac
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*
+ * these four are the default styles used on hyperlinks.
+ * comment them out if you have your own settings.
+ */
+a:link {
+	color: #0000ff;
+}
+/*
+a:visited {
+	color: #000080;
+}
+
+a:hover {
+	background: #bbbbbb;
+}
+
+a:active {
+	color: #0000ff;
+}
+*/
+/*
+ * Default HTML body values - comment this out if you use
+ * your own settings!
+ */
+body {
+	background-color: #F9F9F9;
+	color: #000000;
+}
+
+/*
+ * The outer stats table (this will contain the inner table,
+ * which will hold all of the stats)
+ */
+table.trkOuter {
+	border-top: 1px solid black;
+	border-bottom: 2px solid black;
+	border-left: 1px solid black;
+	border-right: 2px solid black;
+}
+
+/*
+ * The inner stats table, this one actually shows the torrent statistics
+ */
+table.trkInner {
+	background-color: black;
+	border: 0px solid black;
+	border-collapse: separate;
+	border-spacing: 1px 1px;
+}
+
+/*
+ * Odd row in tracker table
+ */
+td.trkOdd {
+	/*background-color: #F9F9F9;*/
+	background-color: #ffffff;
+	padding: 2px;
+}
+
+/*
+ * Even row in tracker table
+ */
+td.trkEven {
+	background-color:#F7F8F8;
+	padding: 2px;
+}
+
+/*
+ * The table heading background color
+ */
+th.trkHeading {
+	background-color: #D7D7D7;
+	padding: 5px;
+}
