@@ -6,9 +6,9 @@ import os, re
    
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ('sn', 'hostname', 'ip', 'oob_ip','idc','rack','rack_no')
+    list_display = ('sn', 'hostname', 'ip', 'oob_ip','status','idc','rack','rack_no')
     list_filter = ('status','idc','rack')
-    list_editable = ('hostname','ip')
+    #list_editable = ('hostname','ip')
     search_fields = ['sn','hostname','ip']
 
 
