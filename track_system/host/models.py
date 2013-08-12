@@ -7,6 +7,7 @@ class Server(models.Model):
     status = models.CharField(max_length=30, verbose_name="安装状态",blank = True,null = True)
     ip = models.CharField(max_length=30, verbose_name="主机IP",null=True,blank=True)
     oob_ip = models.CharField(max_length=30, verbose_name="带外IP",null=True,blank=True)
+    ks_temp = models.CharField(max_length=30, verbose_name="安装模板",null=True,blank=True)
     idc = models.CharField(max_length=30, verbose_name="机房",null=True,blank=True)
     rack = models.CharField(max_length=30, verbose_name="机柜",null=True,blank=True)
     rack_no = models.CharField(max_length=30, verbose_name="机柜号",null=True,blank=True)

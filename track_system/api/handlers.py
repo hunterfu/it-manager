@@ -1,6 +1,7 @@
 from piston.handler import BaseHandler
 from piston.utils import rc, validate
 from host.models import Server
+from pprint import pprint
 
 class ServerHandler(BaseHandler):
     allowed_methods = ('GET','POST')
@@ -15,7 +16,11 @@ class ServerHandler(BaseHandler):
         """
         base = self.base
         if sn:
-            return base.get(sn=sn)
+            try:
+                return base.get(sn=sn)
+            except:
+                #return HttpResponse("None", content_type='text/plain')
+                return "None"
         else:
             return base.all()
 
@@ -25,38 +30,25 @@ class ServerHandler(BaseHandler):
         create server obj and save to db
         """
         data = request.data
-        sn=data['sn']
-        hostname = data.get('hostname',None)
-        status = data.get('status', None)
-        ip = data.get('ip', None)
-        oob_ip = data.get('oob_ip', None)
-        idc = data.get('idc', None)
-        rack = data.get('rack', None)
-        rack_no = data.get('rack_no', None)
+        sn=data.get('sn',None)
         base =  self.base
+        # server serial must be supply
+        if not sn:
+            return "ERROR,NO SN FIELD"
+
         try:
             h = base.get(sn=sn)
-            h.hostname = hostname
-            h.status = status
-            h.ip = ip
-            h.oob_ip = oob_ip
-            h.idc = idc
-            h.rack = rack
-            h.rack_no = rack_no
+            for k, v in data.items():
+                if k in ['hostname','status','ip','oob_ip','idc','rack','rack_no','ks_temp']:
+                    setattr(h, k, v)
             h.save()
             return "UPDATED"
 
         except Server.DoesNotExist:
-            h = self.model(
-                sn=sn,
-                hostname=hostname,
-                ip=ip,
-                oob_ip=oob_ip,
-                idc=idc,
-                rack = rack,
-                rack_no = rack_no
-                )
+            h = self.model()
+            for k, v in data.items():
+                if k in ['sn','hostname','status','ip','oob_ip','idc','rack','rack_no','ks_temp']:
+                    setattr(h,k,v)
             h.save()
-
             return "CREATED"
 
