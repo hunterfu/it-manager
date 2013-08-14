@@ -32,7 +32,10 @@ def export_history_data(base_dir,symbol):
     cache_dir = "%s/trade_db" % (base_dir)
     db_file = "%s/%s" % (cache_dir,symbol)
     #export_file = "/home/hua.fu/geniustrader/data/%s" % symbol
-    export_file = "%s/stock_history_data/%s.txt" % (base_dir,symbol)
+    export_dir =  "%s/stock_history_data" %(base_dir)
+    if not os.path.exists(export_dir):
+        os.system("mkdir -p %s" % export_dir)
+    export_file = "%s/%s.txt" % (export_dir,symbol)
     stock_FILE = open(export_file,"w")
     
     (db_cursor,cx,tag) = connect_trade_db(db_file)
@@ -170,6 +173,8 @@ def update_trade_db(db_cursor,cx,symbol,tag):
 def update_trade_data(base_dir,symbol):
     """ 更新交易数据 """
     cache_dir = "%s/trade_db" % (base_dir)
+    if not os.path.exists(cache_dir): 
+        os.system("mkdir -p %s" % cache_dir)
     symbol = symbol.upper()
     db_file = "%s/%s" % (cache_dir,symbol)
     (db_cursor,cx,tag) = connect_trade_db(db_file)

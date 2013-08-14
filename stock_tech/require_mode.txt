@@ -1,0 +1,3 @@
+perl-Date-Calc.noarch
+perl-Date-Manip.noarch
+perl-GD.x86_64

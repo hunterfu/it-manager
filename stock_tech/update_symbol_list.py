@@ -10,7 +10,8 @@ import shutil
 import pickle
 import re
 import time
-import pysqlite2.dbapi2 as sqlite
+#import pysqlite2.dbapi2 as sqlite
+import sqlite3 as sqlite
 import getopt
 from operator import itemgetter
 from decimal import *
@@ -189,6 +190,7 @@ def main():
     """ main function """
     base_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
     cache_dir = "%s/tmp" % (base_dir)
+    os.system("mkdir -p %s" % cache_dir)
     db_file = "%s/db/stock_db" % (base_dir)
     (db_cursor,cx) = connect_db(db_file)
     cx.text_factory=str

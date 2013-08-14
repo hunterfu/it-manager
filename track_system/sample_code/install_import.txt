@@ -1,5 +1,4 @@
 sn  mtag    hostname    ip  oob_ip  idc ks_temp rack    rack_no
-FPJL2Y1 A@2013  zpullmsg-70-40  10.215.98.40    10.225.194.57   ZTG ops_data_hp_rh57b64 D0G5    1
-DJJL2Y1 A@2013  zpullmsg-70-41  10.215.98.41    10.225.192.61   ZTG ops_data_hp_rh57b64 D0G5    4
-JJJL2Y1 A@2013  tmdsvr-70-1 10.215.98.42    10.225.193.59   ZTG ops_data_hp_rh57b64 D0G5    6
-9D5L2Y1 A@2013  tmdsvr-70-2 10.215.98.43    10.225.205.36   ZTG ops_data_hp_rh57b64 D0G5    7
+83JL2Y1 A@2013  tns-70-1    10.215.76.15
+GR8P2Y1 A@2013  tns-70-2    10.215.76.16
+
