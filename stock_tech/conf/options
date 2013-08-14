@@ -1,12 +1,12 @@
 DB::module Text
 DB::text::directory /home/hua.fu/geniustrader/data
 #DB::text::marker "|"
-DB::text::fields::datetime 0
-DB::text::fields::open 1
-DB::text::fields::high 2
-DB::text::fields::low 3
-DB::text::fields::close 4
-DB::text::fields::volume 5
+DB::text::fields::open 0
+DB::text::fields::high 1
+DB::text::fields::low 2
+DB::text::fields::close 3
+DB::text::fields::volume 4
+DB::text::fields::datetime 5
 #DB::text::format 3
 
 # relying on DB::Text defaults for sample database access

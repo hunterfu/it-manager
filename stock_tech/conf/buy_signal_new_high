@@ -1,4 +1,4 @@
-# 月线过滤信号
+# == break out ==
 Signals::Generic::Or \
     { Signals::Generic::And \
         {S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 10 {I:Prices HIGH} }}}\
