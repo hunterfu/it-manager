@@ -369,7 +369,7 @@ def get_indicator_output(symbol,dayago=65,sma=50,timeframe='day'):
 def scan_stock(conf_dir,stock_list,signal_file):
     """ 
     """
-    graph_dir = "/home/hua.fu/geniustrader/Scripts"
+    graph_dir = script_dir
     ret_list = []
     if len(stock_list) == 0 : return ret_list
     timeframe="day"
@@ -413,7 +413,10 @@ def filter_by_indicator(stock_list):
     """
     根据技术指标筛选短期强于大盘的股票
     """
-    filter_signal_file = ['buy_filter_signal_month']
+    if action == "long":
+        filter_signal_file = ['buy_filter_new_high']
+    if action == "short":
+        filter_signal_file = ['sell_filter_new_low']
     for sig_file in filter_signal_file:
         stock_list = scan_stock(conf_dir,stock_list,sig_file)
     if DEBUG: print "DEBUG: After Scan = %s" % len(stock_list)
@@ -605,11 +608,11 @@ def main():
         #create_graph(stock_list,template_file,conf_dir,country,"TESsig_file",endday)
         #sys.exit(0)
         # 根据大盘过滤出强于大盘的个股
-        wating_stock_list = get_stock_list(db_cursor,cx,country)
-        stock_list = compare_to_spy(wating_stock_list,peroid_offet_list,country)
-        stock_list = stock_list[:50]
-        create_graph(stock_list,template_file,conf_dir,country,"all",endday)
-        sys.exit(0)
+        #wating_stock_list = get_stock_list(db_cursor,cx,country)
+        #stock_list = compare_to_spy(wating_stock_list,peroid_offet_list,country)
+        #stock_list = stock_list[:50]
+        #create_graph(stock_list,template_file,conf_dir,country,"all",endday)
+        #sys.exit(0)
 
         # 根据月线过滤kdj再底部cross的
         wating_stock_list = get_stock_list(db_cursor,cx,country)

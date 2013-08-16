@@ -1,0 +1,26 @@
+# == break out ==
+Signals::Generic::Or \
+    { Signals::Generic::And \
+        {S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 10 {I:Prices HIGH} }}}\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 10 {I:Prices HIGH}}} \
+            {I:Generic:Eval 1.1*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 10 {I:Prices LOW} }} } }\
+        {S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 30 {I:Prices VOLUME}}}}\
+    }\
+    { Signals::Generic::And \
+        {S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH} }}}\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 20 {I:Prices HIGH}}} \
+            {I:Generic:Eval 1.125*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 20 {I:Prices LOW} }} } }\
+        {S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 30 {I:Prices VOLUME}}}}\
+    }\
+    { Signals::Generic::And \
+        {S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 30 {I:Prices HIGH} }}}\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 30 {I:Prices HIGH}}} \
+            {I:Generic:Eval 1.15*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 30 {I:Prices LOW} }} } }\
+        {S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 30 {I:Prices VOLUME}}}}\
+    }\
+    { Signals::Generic::And \
+        {S:Generic:Above {I:Prices CLOSE} {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 50 {I:Prices HIGH} }}}\
+        { S:Generic:Below {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 50 {I:Prices HIGH}}} \
+            {I:Generic:Eval 1.2*{ I:Generic:PeriodAgo 1 { I:Generic:MinInPeriod 50 {I:Prices LOW} }} } }\
+        {S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 30 {I:Prices VOLUME}}}}\
+    }
