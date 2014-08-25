@@ -1,5 +1,29 @@
-S:Generic:Repeated \
-{ Signals::Generic::Or \
-    { S:Generic:Below {I:Prices HIGH} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}}\
-    { S:Generic:Equal {I:Prices HIGH} {I:Generic:PeriodAgo 1 {I:Prices HIGH}}}\
-} 7 
+Signals::Generic::Or \
+   {Signals::Generic::And \
+       { S:Generic:Above {I:Prices CLOSE} 5 }\
+       { S:Generic:Above {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 0.99*{ I:Generic:PeriodAgo 60 { I:Generic:MinInPeriod 200 {I:Prices LOW} }} } }\
+       { S:Generic:Below {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 1.005*{ I:Generic:PeriodAgo 60 { I:Generic:MinInPeriod 200 {I:Prices LOW} }} } }\
+   }\
+   {Signals::Generic::And \
+        { S:Generic:Above {I:Prices CLOSE} 5 }\
+       { S:Generic:Above {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 0.99*{ I:Generic:PeriodAgo 120 { I:Generic:MinInPeriod 140 {I:Prices LOW} }} } }\
+       { S:Generic:Below {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 1.005*{ I:Generic:PeriodAgo 120 { I:Generic:MinInPeriod 140 {I:Prices LOW} }} } }\
+   }\
+   {Signals::Generic::And \
+        { S:Generic:Above {I:Prices CLOSE} 5 }\
+       { S:Generic:Above {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 0.99*{ I:Generic:PeriodAgo 180 { I:Generic:MinInPeriod 80 {I:Prices LOW} }} } }\
+       { S:Generic:Below {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 1.005*{ I:Generic:PeriodAgo 180 { I:Generic:MinInPeriod 80 {I:Prices LOW} }} } }\
+   }\
+   {Signals::Generic::And \
+        { S:Generic:Above {I:Prices CLOSE} 5 }\
+       { S:Generic:Above {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 0.99*{ I:Generic:PeriodAgo 240 { I:Generic:MinInPeriod 20 {I:Prices LOW} }} } }\
+       { S:Generic:Below {I:Generic:MinInPeriod 3 {I:Prices LOW}}  \
+           {I:Generic:Eval 1.005*{ I:Generic:PeriodAgo 240 { I:Generic:MinInPeriod 20 {I:Prices LOW} }} } }\
+   }

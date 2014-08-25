@@ -386,9 +386,9 @@ def iterate_stock(db_cursor,cx,base_dir,symbol=None,title=None,stock_region=None
                     cx.commit()
                     export_history_data(base_dir,symbol)
                     continue
-                if  avg_volume < 500000: 
+                if  avg_volume < 1000000: 
                     # 2周后检查
-                    print "Stock avg_Volume < 500000 , one month later to check"
+                    print "Stock avg_Volume < 1000000 , one month later to check"
                     next_check_time = int(time.time()) + 24 * 3600 * 30 
                     sql_cmd = "update stock set stock_tradedb_lastupdate_time = %s where stock_symbol='%s'" % (next_check_time,symbol)
                     db_cursor.execute(sql_cmd)

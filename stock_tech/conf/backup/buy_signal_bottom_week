@@ -1,4 +1,3 @@
-# 强势股上攻 回调模式 (做多) (回调10% - 15%) 缩量
 Signals::Generic::And \
 { S:Generic:Equal {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 3 {I:Prices LOW}}}  {I:Generic:PeriodAgo 1 {I:Generic:MinInPeriod 26 {I:Prices LOW}}} }\
 { S:Generic:Below {I:Generic:PeriodAgo 1 {I:Prices CLOSE}} { I:Generic:PeriodAgo 1 {I:Generic:MaxInPeriod 3 {I:Prices HIGH}}} } \

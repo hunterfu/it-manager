@@ -192,12 +192,12 @@ report_tpl = "%s/report_backtest" % (base_dir)
 #{ S:Generic:CrossOverUp {I:STO/4} 25 } } {S:Generic:False } """
 
 # ===== 强势测试 ==================#
-buy_signal = """ { Signals::Generic::And \
-{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:Generic:PeriodAgo 5 {I:SMA 50}}} 5 } \
-{ S:Generic:Repeated {S:Generic:Above {I:SMA 20} {I:Generic:PeriodAgo 5 {I:SMA 20}}} 10 } \
-{ S:Generic:Above {I:SMA 20} {I:SMA 50} } \
-{ S:Generic:Above {I:SMA 50} {I:SMA 200} } \
-{ S:Generic:Below {I:STO/1} 20 }} {S:Generic:False } """
+#buy_signal = """ { Signals::Generic::And \
+#{ S:Generic:Repeated {S:Generic:Above {I:SMA 50} {I:Generic:PeriodAgo 5 {I:SMA 50}}} 5 } \
+#{ S:Generic:Repeated {S:Generic:Above {I:SMA 20} {I:Generic:PeriodAgo 5 {I:SMA 20}}} 10 } \
+#{ S:Generic:Above {I:SMA 20} {I:SMA 50} } \
+#{ S:Generic:Above {I:SMA 50} {I:SMA 200} } \
+#{ S:Generic:Below {I:STO/1} 20 }} {S:Generic:False } """
 
 #======== 突破系统测试 ==========#
 #buy_signal = """ { S:Generic:And \
@@ -209,6 +209,12 @@ buy_signal = """ { Signals::Generic::And \
 #{ S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 50 {I:Prices VOLUME}}}} \
 #} {S:Generic:False } """
 
+#======== 突破系统测试 ==========#
+buy_signal = """ { S:Generic:And \
+{S:Generic:Above {I:Prices CLOSE}  {I:Generic:PeriodAgo 1 { I:Generic:MaxInPeriod 10 {I:Prices HIGH} }}}\
+{S:Generic:Above {I:Prices CLOSE}  {I:SMA 50} }\
+{S:Generic:Above {I:Prices VOLUME} {I:Generic:Eval 1.5*{I:SMA 30 {I:Prices VOLUME}}}}\
+} {S:Generic:False } """
 #======== 原始测试基础修改测试 ==========#
 #buy_signal = """ { S:Generic:And \
 #{ S:Generic:Repeated {S:Generic:Increase {I:SMA 200} } 30 }\
@@ -230,10 +236,19 @@ buy_signal = """ { Signals::Generic::And \
 #close_signal = """ { S:Generic:Below {I:Prices CLOSE} {I:SMA 10{ I:Generic:Eval {I:Prices CLOSE} - 1.5*{I:ATR 40} }} } """
 #close_signal = """ { S:Generic:Decrease {I:SMA 10 {I:Generic:Eval {I:Prices CLOSE} - 1.5*{I:ATR 40}} } } """
 #close_signal = """ { S:Generic:CrossOverDown {I:SMA 5 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } {I:SMA 10 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } } """
-close_signal = """ { S:Generic:And \
-{ S:Generic:Below {I:MACD/3} 0 }\
-{ S:Generic:Below {I:SMA 5 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } {I:SMA 10 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } }\
-} """
+#close_signal = """ { S:Generic:And \
+#{ S:Generic:Below {I:MACD/3} 0 }\
+#{ S:Generic:Below {I:SMA 5 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } {I:SMA 10 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } }\
+#{ S:Generic:Below {I:SMA 5 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } {I:SMA 10 {I:Generic:Eval {I:Prices CLOSE} - 2*{I:ATR 40}} } }\
+#} """
+#close_signal = """ { S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1{ I:Generic:MinInPeriod 20 {I:Prices LOW}} }}  """
+close_signal = """ { S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1{ I:Generic:Eval {I:Generic:MaxInPeriod 10 {I:Prices HIGH}} - 3*{I:ATR} } }}  """
+#close_signal = """ { S:Generic:Below {I:Prices CLOSE} {I:EMA 50} }  """
+#close_signal = """ { S:Generic:Or \
+#{ S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1{ I:SAR 0.02 0.015} }}\
+#{ S:Generic:Below {I:Prices CLOSE} {I:Generic:PeriodAgo 1{ I:EMA 21 } }}\
+#}
+#"""
 
 #close_signal = """ { S:Generic:And \
 #{ S:Generic:Above {I:MACD/3} 0 }\
@@ -253,7 +268,7 @@ sell_signal = "%s %s " % (sell_signal_must,sell_signal_1)
 #command = """cd /home/hua.fu/geniustrader/Scripts;./backtest.pl --money-management="Basic" --timeframe day --trade-filter="LongOnly" \
 #--trade-filter="MaxOpenTrades 1" --system='TTS' %s %s """ % (sell_signal,symbol)
 test_list = []
-back_list = ['IBM','AIG','FNSR','HANS','AEA','FSLR','RIG','AMZN','CIM','NRF','BAC']
+back_list = ['IBM','AIG','FNSR','FSLR','RIG','AMZN','CIM','NRF','BAC']
 
 if symbol:
     test_list.append(symbol)
@@ -263,8 +278,8 @@ else:
 report_file = open(report_tpl,"w")
 
 for symbol in test_list:
-    command = """cd /home/hua.fu/geniustrader/Scripts;./backtest.pl  --money-management="Basic" --timeframe day --trade-filter="LongOnly" \
-    --trade-filter="MaxOpenTrades 1" --system='Generic %s ' %s %s """ % (buy_signal,sell_signal,symbol)
+    command = """cd %s/GeniusTrader/Scripts;./backtest.pl  --money-management="Basic" --timeframe day --trade-filter="LongOnly" \
+    --trade-filter="MaxOpenTrades 1" --system='Generic %s ' %s %s """ % (base_dir,buy_signal,sell_signal,symbol)
     (status,output) = commands.getstatusoutput(command)
     print "symbol = %s complete" % symbol
     if len(test_list) == 1:

@@ -133,13 +133,30 @@ def update_cash(cash_val):
     cx.commit()
     cx.close()
 
+def get_all_cash(cash_val):
+    """
+    更新初始现金数据
+    """
+    (db_cursor,cx) = connect_db()
+    try:
+        sql_cmd = "select free_money,balance_date from money order by insert into money values(date('now'),'%s')" % (cash_val)
+        db_cursor.execute(sql_cmd)
+    except sqlite.IntegrityError,e:
+        sql_cmd = "update money set free_money = '%s' where balance_date=date('now')" % (cash_val)
+        db_cursor.execute(sql_cmd)
+    except Exception as inst:
+        print "exception type = %s,Error = %s" % (type(inst),inst)
+
+    cx.commit()
+    cx.close()
+
 def stop_atr(symbol,open_price,action):
     """
     2倍ATR止损,自动计算
     """
     symbol= symbol.upper()
     atr_val = get_atr_output(symbol)
-    per_stock_loss =  1*float(atr_val)
+    per_stock_loss =  1.5*float(atr_val)
     per_stock_gain =  3*float(atr_val)
     if action.lower() == "buy":
         stop_price = float(open_price) - per_stock_loss 
@@ -155,17 +172,18 @@ def get_atr_output(symbol,timeframe='day'):
     symbol = symbol.upper()
     ##if DEBUG: print "DEBUG : CURRENT pROCESS SYMBOL=%s" % symbol
     #print "DEBUG : CURRENT pROCESS SYMBOL=%s" % symbol
+    script_dir = "/home/hua.fu/it-manager/stock_tech/GeniusTrader/Scripts"
     if timeframe == 'day':
-        cmd = "cd /home/hua.fu/geniustrader/Scripts;./display_indicator.pl  --last-record --timeframe=%s \
-                --tight I:ATR %s|grep -P '\[\d+-\d+\-\d+]*.*'" % (timeframe,symbol)
+        cmd = "cd %s;./display_indicator.pl  --last-record --timeframe=%s \
+                --tight I:ATR %s|grep -P '\[\d+-\d+\-\d+]*.*'" % (script_dir,timeframe,symbol)
 
     if timeframe == 'week':
-        cmd = "cd /home/hua.fu/geniustrader/Scripts;./display_indicator.pl  --last-record --timeframe=%s \
-                --tight I:ATR %s|grep -P '\[\d+-\d+]*.*'" % (timeframe,symbol)
+        cmd = "cd %s;./display_indicator.pl  --last-record --timeframe=%s \
+                --tight I:ATR %s|grep -P '\[\d+-\d+]*.*'" % (script_dir,timeframe,symbol)
 
     if timeframe == 'month':
-        cmd = "cd /home/hua.fu/geniustrader/Scripts;./display_indicator.pl  --last-record --timeframe=%s \
-                --tight I:ATR %s| grep -P '\[\d+\/\d+]*.*'" % (timeframe,symbol)
+        cmd = "cd %s;./display_indicator.pl  --last-record --timeframe=%s \
+                --tight I:ATR %s| grep -P '\[\d+\/\d+]*.*'" % (script_dir,timeframe,symbol)
 
     #print "DEBUG indicator_cmd = %s" % cmd
     (status,output) = commands.getstatusoutput(cmd)
@@ -196,7 +214,8 @@ def auto_order(stock_symbol,open_price,stop_price,all_loss_money,commision,actio
     comm_money =  commision * float(stock_num)
     stock_loss_money = per_stock_loss * float(stock_num) + comm_money 
     if stock_loss_money > all_loss_money:
-        print " Warning : stock stop  money > global loss money ,please attention !!!"
+        print "===== Warning : stock stop  money > global loss money ,please attention !!! ======"
+        print "stock loss money =  %s , global loss money = %s" %( stock_loss_money,all_loss_money)
     gain_money = abs(gain_price - float(open_price)) * float(stock_num) - comm_money
 
 

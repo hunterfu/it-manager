@@ -164,7 +164,7 @@ def create_graph(stock_list,template_file,conf_dir,stock_region='US',signal_file
         os.chdir('%s' % script_dir)
         #cmd = "cd %s;perl ./graphic.pl --file %s %s>%s" % (script_dir,graph_conf,symbol,img_file)
         cmd = "perl graphic.pl --file %s %s > %s" % (graph_conf,symbol,img_file)
-        #print cmd
+        print cmd
         (status,output) = commands.getstatusoutput(cmd)
         #print "DEBUG graph_cmd = %s" % cmd
         #res = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
